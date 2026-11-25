@@ -1,0 +1,236 @@
+/**
+ * =========================================================================
+ *  CONFIGURACIÓN INICIAL DEL ÁLBUM — 6 AÑOS JUNTOS
+ *  Arranca sin fotos ni videos: todo se sube y edita cómodamente desde /admin
+ *  (y se guarda en el archivo físico data/album.json).
+ * =========================================================================
+ */
+
+window.ALBUM_DATA = {
+  meta: {
+    coverTitle: 'Nuestra Historia',
+    coverSubtitle: 'Seis años de aventuras, risas, hogar y amor infinito.',
+    datesLabel: '2020 — 2026',
+    anniversaryNumber: '6',
+    startDate: '2020-11-25T00:00:00',
+    backTitle: 'Continuará...',
+    backSubtitle: 'Quedan infinitas páginas en blanco para escribir juntos.',
+    musicSrc: ''
+  },
+
+  dedication: {
+    title: 'Para vos, mi persona favorita',
+    paragraphs: [
+      'Armé este cuaderno para guardar nuestros 6 años juntos. Podés pasar las hojas, mover las fotos para descubrir mensajes escondidos debajo, dar vuelta cada Polaroid y tocar los videos para revivirlos en pantalla grande.',
+      'Además, en cada uno de los 6 años escondí un sobre secreto con contraseña: ¡cada sobre tiene la pista de dónde está escondido uno de tus 6 regalos de aniversario! 🎁♥'
+    ],
+    signature: 'Con todo mi amor, hoy y siempre.'
+  },
+
+  chapters: [
+    {
+      id: 'anio-1',
+      tabLabel: 'Año 1',
+      tabColor: '#f3d7c6',
+      yearLabel: 'Capítulo 1 · Año 1 (2020 — 2021)',
+      shortTitle: 'El Comienzo',
+      leftPage: {
+        title: 'Donde empezó nuestra historia',
+        story: 'Todo arrancó con una charla eterna y la sensación hermosa de haber encontrado a alguien único.',
+        hiddenNotes: []
+      },
+      rightPage: {
+        title: 'Primeras risas y recuerdos',
+        story: 'Un capítulo lleno de primeras veces que guardo para siempre.',
+        hiddenNotes: []
+      },
+      polaroids: [],
+      envelopes: [
+        {
+          id: 'env-1',
+          giftNumber: 1,
+          title: '🎁 Regalo #1 · Año 1',
+          hint: 'Pista de contraseña: ¿Cuántos años cumplimos hoy? (demo: 6)',
+          code: '6',
+          secretTitle: 'Pista del Regalo #1',
+          secretMessage: 'Cuando volví a casa después de vernos por primera vez, supe que acababa de conocer a mi persona favorita en el mundo.',
+          giftClue: '📍 Buscá donde siempre guardamos las tazas del desayuno… ¡hay algo esperándote atrás de tu taza favorita!',
+          x: 76,
+          y: 62,
+          rot: -3.5
+        }
+      ],
+      decorations: []
+    },
+    {
+      id: 'anio-2',
+      tabLabel: 'Año 2',
+      tabColor: '#e8dfc4',
+      yearLabel: 'Capítulo 2 · Año 2 (2021 — 2022)',
+      shortTitle: 'Primeros Viajes',
+      leftPage: {
+        title: 'Ruta, música y aventuras',
+        story: 'Descubrimos que no importa el destino: viajar juntos se convirtió en nuestro plan favorito.',
+        hiddenNotes: []
+      },
+      rightPage: {
+        title: 'Momentos que quedaron grabados',
+        story: 'Cada foto acá me hace volver a esos días increíbles.',
+        hiddenNotes: []
+      },
+      polaroids: [],
+      envelopes: [
+        {
+          id: 'env-2',
+          giftNumber: 2,
+          title: '🎁 Regalo #2 · Año 2',
+          hint: 'Pista de contraseña: Lugar de nuestro primer viaje (demo: PLAYA)',
+          code: 'PLAYA',
+          secretTitle: 'Pista del Regalo #2',
+          secretMessage: 'Este año descubrimos que viajar juntos es el mejor plan del universo. ¡Y tu segundo regalo tiene algo que ver con nuestras escapadas!',
+          giftClue: '📍 Revisá adentro de la valija o mochila que usamos cuando salimos de viaje…',
+          x: 76,
+          y: 62,
+          rot: -2.5
+        }
+      ],
+      decorations: []
+    },
+    {
+      id: 'anio-3',
+      tabLabel: 'Año 3',
+      tabColor: '#d7e3d8',
+      yearLabel: 'Capítulo 3 · Año 3 (2022 — 2023)',
+      shortTitle: 'Aventuras',
+      leftPage: {
+        title: 'Frío afuera, calor adentro',
+        story: 'Un año lleno de escapadas, metas cumplidas y risas en los momentos menos esperados.',
+        hiddenNotes: []
+      },
+      rightPage: {
+        title: 'Recuerdos de este año',
+        story: 'En este capítulo también te espera una pista especial.',
+        hiddenNotes: []
+      },
+      polaroids: [],
+      envelopes: [
+        {
+          id: 'env-3',
+          giftNumber: 3,
+          title: '🎁 Regalo #3 · Año 3',
+          hint: 'Pista de contraseña: Una palabra que nos define (demo: AMOR)',
+          code: 'AMOR',
+          secretTitle: 'Pista del Regalo #3',
+          secretMessage: 'Me encanta mirar atrás y reírme de cada aventura y locura que vivimos este año juntos.',
+          giftClue: '📍 Fijate en el cajón donde guardás tus bufandas o camperas de invierno…',
+          x: 76,
+          y: 62,
+          rot: 3
+        }
+      ],
+      decorations: []
+    },
+    {
+      id: 'anio-4',
+      tabLabel: 'Año 4',
+      tabColor: '#d9dfe9',
+      yearLabel: 'Capítulo 4 · Año 4 (2023 — 2024)',
+      shortTitle: 'Crecimos Juntos',
+      leftPage: {
+        title: 'Equipo incondicional',
+        story: 'Aprendimos a acompañarnos en días fáciles y difíciles, celebrando cada paso como propio.',
+        hiddenNotes: []
+      },
+      rightPage: {
+        title: 'Pequeños grandes instantes',
+        story: 'A veces las mejores fotos no son posadas: son las que nos agarran riéndonos sin darnos cuenta.',
+        hiddenNotes: []
+      },
+      polaroids: [],
+      envelopes: [
+        {
+          id: 'env-4',
+          giftNumber: 4,
+          title: '🎁 Regalo #4 · Año 4',
+          hint: 'Pista de contraseña: ¿Qué tomamos todas las tardes? (demo: MATE)',
+          code: 'MATE',
+          secretTitle: 'Pista del Regalo #4',
+          secretMessage: 'Gracias por ser mi equipo incondicional en las buenas y en las difíciles. Sos lo mejor que me pasó.',
+          giftClue: '📍 Mirá entre los libros o adornos del mueble del living… ¡ahí hay una sorpresa!',
+          x: 76,
+          y: 62,
+          rot: 2.5
+        }
+      ],
+      decorations: []
+    },
+    {
+      id: 'anio-5',
+      tabLabel: 'Año 5',
+      tabColor: '#e7d7e6',
+      yearLabel: 'Capítulo 5 · Año 5 (2024 — 2025)',
+      shortTitle: 'Nuestro Hogar',
+      leftPage: {
+        title: 'Hogar es donde estás vos',
+        story: 'Noches de lluvia, pelis en el sillón, comida rica y esa paz única que siento cuando te abrazo.',
+        hiddenNotes: []
+      },
+      rightPage: {
+        title: 'Nuestra vida cotidiana',
+        story: 'Porque lo extraordinario de nosotros es lo linda que se siente la rutina juntos.',
+        hiddenNotes: []
+      },
+      polaroids: [],
+      envelopes: [
+        {
+          id: 'env-5',
+          giftNumber: 5,
+          title: '🎁 Regalo #5 · Año 5',
+          hint: 'Pista de contraseña: Donde más paz sentimos juntos (demo: CASA)',
+          code: 'CASA',
+          secretTitle: 'Pista del Regalo #5',
+          secretMessage: 'Lo más lindo de este año fue confirmar que mi lugar favorito del planeta no es un mapa: sos vos.',
+          giftClue: '📍 Buscá debajo de los almohadones del sillón donde siempre vemos pelis…',
+          x: 76,
+          y: 62,
+          rot: -3
+        }
+      ],
+      decorations: []
+    },
+    {
+      id: 'anio-6',
+      tabLabel: 'Año 6',
+      tabColor: '#f2ccd2',
+      yearLabel: 'Capítulo 6 · Año 6 (2025 — 2026)',
+      shortTitle: 'Hoy y Siempre',
+      leftPage: {
+        title: '¡Felices 6 años, mi amor!',
+        story: 'Mirar hacia atrás me llena de orgullo por todo lo que construimos. Y lo mejor es saber todo lo que nos falta vivir.',
+        hiddenNotes: []
+      },
+      rightPage: {
+        title: 'Tu sorpresa final',
+        story: 'Abrí el sobre secreto final de aniversario para descubrir el último regalo.',
+        hiddenNotes: []
+      },
+      polaroids: [],
+      envelopes: [
+        {
+          id: 'env-6',
+          giftNumber: 6,
+          title: '🎁 Regalo #6 · Final',
+          hint: 'Pista de contraseña: Fecha de aniversario DDMM (demo: 2511)',
+          code: '2511',
+          secretTitle: 'Pista del Regalo #6 · ¡El Gran Final! 💌',
+          secretMessage: 'Feliz 6to aniversario, mi amor. Gracias por estos años maravillosos, por tu ternura, tu paciencia y tu risa. Te amo con todo mi corazón. ♥',
+          giftClue: '📍 El último regalo está escondido en el lugar donde apoyás la cabeza cada noche… ¡mirá en tu mesa de luz / debajo de la almohada!',
+          x: 76,
+          y: 62,
+          rot: -3
+        }
+      ],
+      decorations: []
+    }
+  ]
+};

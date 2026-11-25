@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin · Cuaderno 6 Años</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/admin.css" />
+</head>
+<body>
+  <!-- PIN Lock Screen -->
+  <section class="pin-screen" id="pinScreen">
+    <div class="pin-card">
+      <div class="pin-seal">🔐</div>
+      <span class="kicker">Panel Privado</span>
+      <h1>Editar Cuaderno</h1>
+      <p>Ingresá el PIN de administrador para modificar los textos, pistas de regalos y fotos del archivo físico <code>data/album.json</code>.</p>
+      <form id="pinForm">
+        <input type="password" id="pinInput" class="pin-input" placeholder="••••" autocomplete="current-password" required />
+        <div class="pin-error" id="pinError"></div>
+        <button type="submit" class="btn primary full">Entrar al editor</button>
+      </form>
+      <a href="/" class="back-plain">← Volver al cuaderno</a>
+    </div>
+  </section>
+
+  <!-- Main Editor App -->
+  <div class="admin-app hidden" id="adminApp">
+    <header class="admin-header">
+      <div class="header-left">
+        <a href="/" class="btn ghost" target="_blank">📖 Ver cuaderno</a>
+        <div>
+          <div class="kicker">Guardado directo en archivo físico</div>
+          <h1>Editor · Cuaderno 6 Años</h1>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <span class="save-status" id="saveStatus">Sin cambios sin guardar</span>
+        <button class="btn ghost" id="downloadBackupBtn" type="button">⬇ Respaldo .json</button>
+        <button class="btn primary" id="saveBtn" type="button">💾 Guardar cambios</button>
+        <button class="btn ghost" id="logoutBtn" type="button" title="Cerrar sesión">🔒 Salir</button>
+      </div>
+    </header>
+
+    <div class="admin-layout">
+      <!-- Left Sidebar Navigation -->
+      <aside class="sidebar">
+        <div class="side-group-label">General</div>
+        <button class="side-tab active" data-section="meta">📖 Portada y General</button>
+        <button class="side-tab" data-section="dedication">💌 Dedicatoria</button>
+
+        <div class="side-group-label">Capítulos (6 Años + Regalos)</div>
+        <div id="chapterTabsNav"></div>
+
+        <div class="side-group-label">Seguridad</div>
+        <button class="side-tab" data-section="security">🔐 Cambiar PIN</button>
+      </aside>
+
+      <!-- Main Form Area -->
+      <main class="editor-main" id="editorMain"></main>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="/admin.js"></script>
+</body>
+</html>

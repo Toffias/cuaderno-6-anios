@@ -1,0 +1,14 @@
+# Archivos privados y temporales del servidor
+data/admin-config.json
+data/album.backup.json
+data/*.tmp
+
+# Media subida en producción (descomentá si querés evitar subir fotos/videos pesados a Git)
+# media/anio-*/*
+# media/musica/*
+!media/anio-*/.gitkeep
+
+# Sistema operativo / editores
+.DS_Store
+Thumbs.db
+*.log
