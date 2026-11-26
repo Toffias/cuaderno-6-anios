@@ -627,6 +627,46 @@
   const customPositions = JSON.parse(localStorage.getItem('album_custom_positions_v1') || '{}');
   const customPolaroids = JSON.parse(localStorage.getItem('album_custom_polaroids_v1') || '{}');
 
+  // =========================================================================
+  // 2B. CHAPTER VISUAL THEMES & FLOATING AMBIENT PARTICLES
+  // =========================================================================
+  const THEME_PARTICLES = {
+    'vintage-warm':   { chars: ['✦', '·', '✨'], color: '#f3d49c', opacity: 0.28 },
+    'coastal-sunset': { chars: ['✦', '◌', '·'],  color: '#ffd2a6', opacity: 0.32 },
+    'starry-night':   { chars: ['✦', '✧', '⋆', '★'], color: '#dbe4ff', opacity: 0.42 },
+    'botanical-sage': { chars: ['🍃', '✦', '·'], color: '#c4e0be', opacity: 0.34 },
+    'cozy-lavender':  { chars: ['✧', '✦', '·'],  color: '#e6c8f5', opacity: 0.34 },
+    'rose-champagne': { chars: ['♥', '✦', '○'],  color: '#f7c2cf', opacity: 0.34 },
+    'autumn-cinema':  { chars: ['🍂', '✦', '·'], color: '#f0b882', opacity: 0.34 },
+    'sakura-blush':   { chars: ['🌸', '✧', '·'], color: '#fad0dc', opacity: 0.38 }
+  };
+
+  const ambientParticlesEl = document.getElementById('ambientParticles');
+  let activeThemeId = '';
+
+  function applyTheme(themeId) {
+    const resolved = THEME_PARTICLES[themeId] ? themeId : 'vintage-warm';
+    if (resolved === activeThemeId) return;
+    activeThemeId = resolved;
+    document.body.dataset.theme = resolved;
+
+    if (!ambientParticlesEl) return;
+    const cfg = THEME_PARTICLES[resolved];
+    const items = [];
+    for (let i = 0; i < 16; i++) {
+      const ch = cfg.chars[i % cfg.chars.length];
+      const left = (Math.random() * 96 + 2).toFixed(1);
+      const size = (10 + Math.random() * 11).toFixed(0);
+      const dur = (11 + Math.random() * 11).toFixed(1);
+      const delay = (-Math.random() * 16).toFixed(1);
+      const drift = Math.round((Math.random() - 0.5) * 80);
+      items.push(
+        `<span class="amb-particle" style="left:${left}%; font-size:${size}px; color:${cfg.color}; --p-opacity:${cfg.opacity}; --p-drift:${drift}px; animation-duration:${dur}s; animation-delay:${delay}s;">${ch}</span>`
+      );
+    }
+    ambientParticlesEl.innerHTML = items.join('');
+  }
+
   // Clock offset against server so scheduled unlocks stay accurate across devices
   const serverClockOffsetMs = DATA.serverNow ? (Date.parse(DATA.serverNow) - Date.now()) : 0;
   function getSyncedNow() {
@@ -868,8 +908,9 @@
       `;
     }
 
+    const pageTheme = ch.theme || 'vintage-warm';
     return `
-      <div class="face ${faceClass} paper-face">
+      <div class="face ${faceClass} paper-face" data-page-theme="${pageTheme}">
         <div class="page-header">
           <span class="chapter-kicker">${ch.yearLabel}</span>
           <span class="page-number">p. ${String(pageNum).padStart(2, '0')}</span>
@@ -1366,21 +1407,29 @@
       tab.classList.toggle('active', Number(tab.dataset.spread) === currentSpread);
     });
 
-    // Update bottom spread status
+    // Update bottom spread status, ambient theme & chapter song
     if (currentSpread === 0) {
       spreadChapterEl.textContent = 'Portada';
       spreadPagesEl.textContent = 'Tocá el cuaderno o "Pasar hoja" para abrir';
+      applyTheme('vintage-warm');
+      syncTrackForCurrentSpread();
     } else if (currentSpread === 1) {
       spreadChapterEl.textContent = 'Dedicatoria & Índice';
       spreadPagesEl.textContent = 'Páginas 01 — 02';
+      applyTheme('vintage-warm');
+      syncTrackForCurrentSpread();
     } else if (currentSpread === TOTAL_SPREADS) {
       spreadChapterEl.textContent = 'Contratapa';
       spreadPagesEl.textContent = 'Fin del Volumen I';
+      applyTheme('vintage-warm');
+      syncTrackForCurrentSpread();
     } else {
       const ch = DATA.chapters[currentSpread - 2];
       const pL = 3 + (currentSpread - 2) * 2;
       spreadChapterEl.textContent = `${ch.tabLabel} · ${ch.shortTitle}`;
       spreadPagesEl.textContent = `Páginas ${String(pL).padStart(2, '0')} — ${String(pL + 1).padStart(2, '0')}`;
+      applyTheme(isChapterLocked(ch) ? 'vintage-warm' : (ch.theme || 'vintage-warm'));
+      syncTrackForCurrentSpread();
     }
   }
 
@@ -1575,6 +1624,9 @@
     videoPortalFrame.style.height = rect.height + 'px';
     videoPortalFrame.style.borderRadius = '4px';
 
+    // Pause background music while watching a Video Polaroid so audio never clashes
+    pauseMusicForVideo();
+
     // Setup real <video> vs animated romantic demo canvas
     if (item.videoSrc) {
       realVideo.src = item.videoSrc;
@@ -1639,6 +1691,7 @@
       videoPortal.classList.remove('active');
       videoPortal.setAttribute('aria-hidden', 'true');
       cameraStage.style.transform = '';
+      resumeMusicAfterVideo();
     }, 690);
   }
 
@@ -1747,13 +1800,32 @@
   }
 
   // =========================================================================
-  // 8. BACKGROUND MUSIC (Custom MP3 OR gentle offline music-box synth)
+  // 8. BACKGROUND MUSIC (Per-chapter song with smooth fade + video auto-pause)
   // =========================================================================
   const musicBtn = document.getElementById('musicBtn');
   const musicLabel = document.getElementById('musicLabel');
   const bgAudio = document.getElementById('bgAudio');
-  let audioCtx = null, synthTimer = null, musicPlaying = false, noteStep = 0;
+  let audioCtx = null, synthTimer = null, musicPlaying = false, pausedByVideo = false, noteStep = 0;
+  let currentTrackSrc = '';
+  let fadeInterval = null;
+  const TARGET_VOL = 0.45;
   const melody = [261.63, 329.63, 392.00, 493.88, 440.00, 392.00, 329.63, 293.66];
+
+  function getActiveTrackInfo() {
+    if (currentSpread >= 2 && currentSpread < TOTAL_SPREADS) {
+      const ch = DATA.chapters[currentSpread - 2];
+      if (ch && !isChapterLocked(ch) && ch.musicSrc) {
+        return {
+          src: ch.musicSrc,
+          label: ch.musicTitle ? `♫ ${ch.musicTitle}` : `♫ ${ch.tabLabel}`
+        };
+      }
+    }
+    if (DATA.meta.musicSrc) {
+      return { src: DATA.meta.musicSrc, label: '♫ Sonando' };
+    }
+    return { src: '', label: '♫ Sonando' };
+  }
 
   function playSynthNote() {
     if (!audioCtx) return;
@@ -1770,27 +1842,99 @@
     noteStep++;
   }
 
-  musicBtn.addEventListener('click', () => {
-    if (!musicPlaying) {
-      musicPlaying = true;
-      musicBtn.classList.add('playing');
-      musicLabel.textContent = 'Sonando';
-      if (DATA.meta.musicSrc) {
-        bgAudio.src = DATA.meta.musicSrc;
-        bgAudio.volume = 0.45;
-        bgAudio.play().catch(() => {});
-      } else {
+  function fadeAudioTo(targetVol, durationMs, onDone) {
+    clearInterval(fadeInterval);
+    const startVol = bgAudio.volume;
+    const steps = 12;
+    const stepMs = Math.max(16, Math.round(durationMs / steps));
+    let i = 0;
+    fadeInterval = setInterval(() => {
+      i++;
+      const next = startVol + ((targetVol - startVol) * (i / steps));
+      bgAudio.volume = Math.max(0, Math.min(1, next));
+      if (i >= steps) {
+        clearInterval(fadeInterval);
+        if (typeof onDone === 'function') onDone();
+      }
+    }, stepMs);
+  }
+
+  function startTrack(track) {
+    musicLabel.textContent = track.label.length > 22 ? track.label.slice(0, 21) + '…' : track.label;
+
+    if (!track.src) {
+      // Fallback to built-in gentle music-box melody
+      if (currentTrackSrc) {
+        fadeAudioTo(0, 260, () => { bgAudio.pause(); });
+        currentTrackSrc = '';
+      }
+      if (!synthTimer) {
         audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
         if (audioCtx.state === 'suspended') audioCtx.resume();
         playSynthNote();
         synthTimer = setInterval(playSynthNote, 960);
       }
+      return;
+    }
+
+    // Stop synth if playing
+    if (synthTimer) { clearInterval(synthTimer); synthTimer = null; }
+
+    // Same track already playing -> nothing to restart
+    if (currentTrackSrc === track.src && !bgAudio.paused) return;
+
+    const switchToNew = () => {
+      currentTrackSrc = track.src;
+      bgAudio.src = track.src;
+      bgAudio.volume = 0;
+      bgAudio.play().then(() => fadeAudioTo(TARGET_VOL, 420)).catch(() => {});
+    };
+
+    if (!bgAudio.paused && currentTrackSrc) {
+      fadeAudioTo(0, 300, () => {
+        bgAudio.pause();
+        switchToNew();
+      });
+    } else {
+      switchToNew();
+    }
+  }
+
+  function syncTrackForCurrentSpread() {
+    if (!musicPlaying || pausedByVideo) return;
+    startTrack(getActiveTrackInfo());
+  }
+
+  function pauseMusicForVideo() {
+    if (!musicPlaying) return;
+    pausedByVideo = true;
+    clearInterval(fadeInterval);
+    if (synthTimer) { clearInterval(synthTimer); synthTimer = null; }
+    bgAudio.pause();
+  }
+
+  function resumeMusicAfterVideo() {
+    if (!pausedByVideo) return;
+    pausedByVideo = false;
+    if (musicPlaying) {
+      startTrack(getActiveTrackInfo());
+    }
+  }
+
+  musicBtn.addEventListener('click', () => {
+    if (!musicPlaying) {
+      musicPlaying = true;
+      pausedByVideo = false;
+      musicBtn.classList.add('playing');
+      startTrack(getActiveTrackInfo());
     } else {
       musicPlaying = false;
+      pausedByVideo = false;
       musicBtn.classList.remove('playing');
       musicLabel.textContent = 'Música';
+      clearInterval(fadeInterval);
+      if (synthTimer) { clearInterval(synthTimer); synthTimer = null; }
       bgAudio.pause();
-      clearInterval(synthTimer);
     }
   });
 

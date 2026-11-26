@@ -30,6 +30,7 @@ window.ALBUM_DATA = {
   chapters: [
     {
       id: 'anio-1',
+      theme: 'vintage-warm',
       tabLabel: 'Año 1',
       tabColor: '#f3d7c6',
       yearLabel: 'Capítulo 1 · Año 1 (2020 — 2021)',
@@ -64,6 +65,7 @@ window.ALBUM_DATA = {
     },
     {
       id: 'anio-2',
+      theme: 'coastal-sunset',
       tabLabel: 'Año 2',
       tabColor: '#e8dfc4',
       yearLabel: 'Capítulo 2 · Año 2 (2021 — 2022)',
@@ -98,6 +100,7 @@ window.ALBUM_DATA = {
     },
     {
       id: 'anio-3',
+      theme: 'starry-night',
       tabLabel: 'Año 3',
       tabColor: '#d7e3d8',
       yearLabel: 'Capítulo 3 · Año 3 (2022 — 2023)',
@@ -132,6 +135,7 @@ window.ALBUM_DATA = {
     },
     {
       id: 'anio-4',
+      theme: 'botanical-sage',
       tabLabel: 'Año 4',
       tabColor: '#d9dfe9',
       yearLabel: 'Capítulo 4 · Año 4 (2023 — 2024)',
@@ -166,6 +170,7 @@ window.ALBUM_DATA = {
     },
     {
       id: 'anio-5',
+      theme: 'cozy-lavender',
       tabLabel: 'Año 5',
       tabColor: '#e7d7e6',
       yearLabel: 'Capítulo 5 · Año 5 (2024 — 2025)',
@@ -200,6 +205,7 @@ window.ALBUM_DATA = {
     },
     {
       id: 'anio-6',
+      theme: 'rose-champagne',
       tabLabel: 'Año 6',
       tabColor: '#f2ccd2',
       yearLabel: 'Capítulo 6 · Año 6 (2025 — 2026)',

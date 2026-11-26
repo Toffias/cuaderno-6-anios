@@ -51,7 +51,10 @@
           "resetVersion": 1
         }
       ],
-      "decorations": []
+      "decorations": [],
+      "theme": "vintage-warm",
+      "musicSrc": "",
+      "musicTitle": ""
     },
     {
       "id": "anio-2",
@@ -87,7 +90,10 @@
         }
       ],
       "decorations": [],
-      "unlockAt": ""
+      "unlockAt": "",
+      "theme": "coastal-sunset",
+      "musicSrc": "",
+      "musicTitle": ""
     },
     {
       "id": "anio-3",
@@ -122,7 +128,10 @@
           "resetVersion": 1
         }
       ],
-      "decorations": []
+      "decorations": [],
+      "theme": "starry-night",
+      "musicSrc": "",
+      "musicTitle": ""
     },
     {
       "id": "anio-4",
@@ -157,7 +166,10 @@
           "resetVersion": 1
         }
       ],
-      "decorations": []
+      "decorations": [],
+      "theme": "botanical-sage",
+      "musicSrc": "",
+      "musicTitle": ""
     },
     {
       "id": "anio-5",
@@ -192,7 +204,10 @@
           "resetVersion": 1
         }
       ],
-      "decorations": []
+      "decorations": [],
+      "theme": "cozy-lavender",
+      "musicSrc": "",
+      "musicTitle": ""
     },
     {
       "id": "anio-6",
@@ -227,7 +242,10 @@
           "resetVersion": 1
         }
       ],
-      "decorations": []
+      "decorations": [],
+      "theme": "rose-champagne",
+      "musicSrc": "",
+      "musicTitle": ""
     }
   ]
 }

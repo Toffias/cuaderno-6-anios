@@ -12,6 +12,17 @@
   const logoutBtn = document.getElementById('logoutBtn');
   const toastEl = document.getElementById('toast');
 
+  const CHAPTER_THEMES = [
+    { id: 'vintage-warm',   icon: '☕', name: 'Clásico Cálido',      desc: 'Madera, papel crema y terracota', bg: 'linear-gradient(135deg,#2a1c19,#57342c)', paper: '#faf4e8', accent: '#c46455' },
+    { id: 'coastal-sunset', icon: '🌅', name: 'Atardecer en el Mar', desc: 'Océano nocturno y coral cálido',  bg: 'linear-gradient(135deg,#13232e,#594a4e)', paper: '#fbf5eb', accent: '#d97254' },
+    { id: 'starry-night',   icon: '🌌', name: 'Noche Estrellada',    desc: 'Índigo profundo y estrellitas',   bg: 'linear-gradient(135deg,#0f152a,#2d3a6b)', paper: '#f2f4fb', accent: '#5564a8' },
+    { id: 'botanical-sage', icon: '🌿', name: 'Jardín Botánico',     desc: 'Verde bosque y hojitas',          bg: 'linear-gradient(135deg,#16231a,#36523c)', paper: '#f5f7f0', accent: '#547d5a' },
+    { id: 'cozy-lavender',  icon: '🔮', name: 'Hogar & Lavanda',     desc: 'Ciruela suave y destellos',       bg: 'linear-gradient(135deg,#20172b,#513763)', paper: '#f9f3fb', accent: '#8e5c94' },
+    { id: 'rose-champagne', icon: '🥂', name: 'Gala Rosa & Oro',     desc: 'Bordeaux romántico y burbujas',   bg: 'linear-gradient(135deg,#2b131b,#6b2c40)', paper: '#fdf4f6', accent: '#c4546d' },
+    { id: 'autumn-cinema',  icon: '🍂', name: 'Otoño Nostálgico',    desc: 'Ámbar cálido y hojas de otoño',   bg: 'linear-gradient(135deg,#291710,#6e3b20)', paper: '#f9efe0', accent: '#c4602e' },
+    { id: 'sakura-blush',   icon: '🌸', name: 'Primavera Sakura',    desc: 'Rosa pétalo y brisa floral',      bg: 'linear-gradient(135deg,#2d1922,#6e3b50)', paper: '#fef6f8', accent: '#d46c88' }
+  ];
+
   let activePin = sessionStorage.getItem('album_admin_pin') || '';
   let album = null;
   let activeSection = 'meta';
@@ -413,6 +424,7 @@
     `;
 
     const lockedNow = isFutureUnlock(ch.unlockAt);
+    const currentTheme = ch.theme || 'vintage-warm';
     editorMain.innerHTML = `
       <section class="card">
         <div class="card-head">
@@ -427,7 +439,51 @@
             <input type="datetime-local" id="chUnlockInput" value="${esc(isoToLocalInputValue(ch.unlockAt))}" />
             <button class="btn sm" id="clearUnlockBtn" type="button">🔓 Liberar ahora</button>
           </div>
-          <small>Mientras falte para esa fecha y hora, el cuaderno muestra una cuenta regresiva en vivo y oculta las fotos y la pista del regalo.</small>
+          <small>Mientras falte para esa fecha y hora, el cuaderno muestra una cuenta regresiva en vivo y oculta las fotos, el tema y la pista del regalo.</small>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <h2>🎵 Canción / Tema musical de ${esc(ch.tabLabel)}</h2>
+          ${ch.musicSrc ? `<button class="btn danger sm" id="clearChMusicBtn" type="button">✕ Quitar canción</button>` : ''}
+        </div>
+        <div class="grid-2">
+          <div class="field">
+            <label>Nombre del tema (se muestra en el botón de música)</label>
+            <input data-ch="musicTitle" value="${esc(ch.musicTitle || '')}" placeholder="Ej: Nuestra canción del ${esc(ch.tabLabel)}" />
+          </div>
+          <div class="field">
+            <label>Archivo de audio (MP3 / OGG / M4A)</label>
+            <div class="music-row">
+              <input data-ch="musicSrc" id="chMusicSrcInput" value="${esc(ch.musicSrc || '')}" placeholder="Vacío = usa la canción general" />
+              <label class="btn primary sm" style="cursor:pointer; white-space:nowrap;">
+                🎵 Subir tema
+                <input type="file" id="chMusicUploadInput" accept=".mp3,.ogg,.m4a,audio/*" hidden />
+              </label>
+            </div>
+          </div>
+        </div>
+        ${ch.musicSrc ? `<audio controls src="/${esc(ch.musicSrc)}" style="width:100%; height:36px; margin-top:8px;"></audio>` : `<small style="color:var(--muted);">Si dejás esto vacío, en este capítulo suena la canción general configurada en Portada y General.</small>`}
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <h2>🎨 Tema visual de ${esc(ch.tabLabel)}</h2>
+        </div>
+        <div class="theme-picker-grid" id="themePickerGrid">
+          ${CHAPTER_THEMES.map(t => `
+            <button type="button" class="theme-card ${currentTheme === t.id ? 'active' : ''}" data-theme-id="${t.id}">
+              <div class="theme-swatch" style="background:${t.bg};">
+                <span style="font-size:1.1rem;">${t.icon}</span>
+                <span class="theme-swatch-paper" style="background:${t.paper};">
+                  <span class="theme-swatch-dot" style="background:${t.accent};"></span>
+                </span>
+              </div>
+              <span class="theme-name">${t.name}</span>
+              <span class="theme-desc">${t.desc}</span>
+            </button>
+          `).join('')}
         </div>
       </section>
 
@@ -585,6 +641,48 @@
       markDirty(true);
       refreshScheduleBadge();
     };
+
+    const chMusicUploadInput = document.getElementById('chMusicUploadInput');
+    if (chMusicUploadInput) {
+      chMusicUploadInput.addEventListener('change', async (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        showToast(`Subiendo ${file.name}...`);
+        try {
+          const up = await uploadMediaFile(file, 'musica');
+          ch.musicSrc = up.path;
+          if (!ch.musicTitle) {
+            ch.musicTitle = file.name.replace(/\.[^/.]+$/, '').replace(/[-_]+/g, ' ').slice(0, 34);
+          }
+          await saveAlbumToDisk(`🎵 Canción de ${ch.tabLabel} subida y guardada`);
+          renderChapter(idx);
+        } catch (err) {
+          showToast('❌ ' + err.message);
+        }
+      });
+    }
+
+    const clearChMusicBtn = document.getElementById('clearChMusicBtn');
+    if (clearChMusicBtn) {
+      clearChMusicBtn.onclick = async () => {
+        ch.musicSrc = '';
+        ch.musicTitle = '';
+        try {
+          await saveAlbumToDisk(`Canción propia de ${ch.tabLabel} quitada`);
+          renderChapter(idx);
+        } catch (err) {
+          showToast('❌ ' + err.message);
+        }
+      };
+    }
+
+    editorMain.querySelectorAll('[data-theme-id]').forEach(btn => {
+      btn.onclick = () => {
+        ch.theme = btn.dataset.themeId;
+        editorMain.querySelectorAll('[data-theme-id]').forEach(b => b.classList.toggle('active', b === btn));
+        markDirty(true);
+      };
+    });
 
     const resetChapterGiftBtn = document.getElementById('resetChapterGiftBtn');
     if (resetChapterGiftBtn) {
