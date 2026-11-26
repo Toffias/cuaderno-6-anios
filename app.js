@@ -1233,7 +1233,7 @@
               <span class="page-number">p. ${String(pageNum).padStart(2, '0')}</span>
             </div>
             <div class="locked-chapter-box">
-              <div class="locked-seal-icon">⏳</div>
+              <div class="hourglass-spacer"></div>
               <h2 class="page-heading" style="margin:0;">Capítulo sellado</h2>
               <p class="page-story" style="max-width:340px;">
                 Este capítulo todavía guarda sus recuerdos y la pista de tu regalo… ¡volvé cuando termine la cuenta regresiva!
@@ -1392,6 +1392,7 @@
   }
 
   function renderInteractiveSpread() {
+    if (window.Hourglass3D) window.Hourglass3D.unmount();
     interactiveLayer.innerHTML = '';
 
     // Cover states have no interactive overlay items
@@ -1418,6 +1419,24 @@
     if (isChapterLocked(chapter)) {
       resetLayoutBtn.style.opacity = '0.35';
       resetLayoutBtn.disabled = true;
+
+      // Mount interactive 3D Three.js Hourglass aligned cleanly over the left sealed page spacer
+      const host = document.createElement('div');
+      host.className = 'hourglass-3d-host';
+      host.title = 'Arrastrá para girar el reloj de arena 3D';
+      const canvasBox = document.createElement('div');
+      canvasBox.style.width = '100%';
+      canvasBox.style.height = '100%';
+      const hint = document.createElement('span');
+      hint.className = 'hourglass-drag-hint';
+      hint.textContent = '↻ Girá el reloj 3D';
+      host.appendChild(canvasBox);
+      host.appendChild(hint);
+      interactiveLayer.appendChild(host);
+
+      requestAnimationFrame(() => {
+        if (window.Hourglass3D) window.Hourglass3D.mount(canvasBox);
+      });
       return;
     }
 

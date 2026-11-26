@@ -311,7 +311,7 @@ html, body {
 .chapter-tabs {
   position: absolute;
   top: 44px;
-  right: -58px;
+  right: -66px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -328,14 +328,14 @@ html, body {
 }
 
 .chapter-tab {
-  width: 70px;
-  padding: 9px 7px 9px 14px;
+  width: 78px;
+  padding: 9px 10px 9px 14px;
   border-radius: 0 10px 10px 0;
   border: 1px solid rgba(53, 40, 35, 0.16);
   border-left: none;
-  font-size: 0.72rem;
+  font-size: 0.71rem;
   font-weight: 700;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.02em;
   color: #3a2a24;
   cursor: pointer;
   text-align: left;
@@ -359,26 +359,46 @@ html, body {
 /* Sealed / Scheduled chapter pages */
 .locked-chapter-box {
   margin: auto 0;
-  padding: 26px 22px;
+  padding: 22px 22px;
   border-radius: 16px;
-  background: rgba(255, 253, 248, 0.75);
+  background: rgba(255, 253, 248, 0.78);
   border: 1.5px dashed rgba(196, 100, 85, 0.36);
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
-.locked-seal-icon {
-  width: 62px;
-  height: 62px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #dc7c6d, #9d3a31);
-  color: #fcebd2;
-  display: grid;
-  place-items: center;
-  font-size: 1.6rem;
-  box-shadow: 0 10px 22px rgba(157, 58, 49, 0.3);
+.hourglass-spacer {
+  width: 210px;
+  height: 226px;
+  margin: -4px auto 4px;
+}
+.hourglass-3d-host {
+  position: absolute;
+  left: 25%;
+  top: 40%;
+  transform: translate(-50%, -50%);
+  width: 216px;
+  height: 224px;
+  pointer-events: auto;
+  cursor: grab;
+  touch-action: none;
+  z-index: 25;
+  filter: drop-shadow(0 16px 24px rgba(58, 38, 22, 0.22));
+}
+.hourglass-3d-host:active { cursor: grabbing; }
+.hourglass-drag-hint {
+  position: absolute;
+  bottom: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: rgba(118, 98, 88, 0.78);
+  white-space: nowrap;
+  pointer-events: none;
 }
 .locked-date-pill {
   font-size: 0.76rem;
