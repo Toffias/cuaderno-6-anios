@@ -374,7 +374,7 @@
     {
       type: 'doodle-flower',
       name: 'Flor a trazo',
-      cat: 'dibujos',
+      cat: 'flores',
       width: 88,
       svg: `<svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
         <path d="M50 112 Q46 76 52 44" fill="none" stroke="#4d3d35" stroke-width="2.5" stroke-linecap="round"/>
@@ -393,7 +393,7 @@
     {
       type: 'doodle-coffee',
       name: 'Tacita dibujada',
-      cat: 'dibujos',
+      cat: 'comida',
       width: 90,
       svg: `<svg viewBox="0 0 110 100" xmlns="http://www.w3.org/2000/svg">
         <path d="M40 24 q-6 -10 3 -16 M56 22 q6 -10 -2 -16" fill="none" stroke="#856b5e" stroke-width="2.4" stroke-linecap="round"/>
@@ -405,7 +405,7 @@
     {
       type: 'doodle-mate',
       name: 'Matecito ♥',
-      cat: 'dibujos',
+      cat: 'comida',
       width: 82,
       svg: `<svg viewBox="0 0 100 116" xmlns="http://www.w3.org/2000/svg">
         <line x1="62" y1="42" x2="82" y2="12" stroke="#8c99a0" stroke-width="4.5" stroke-linecap="round"/>
@@ -530,7 +530,7 @@
     {
       type: 'flower',
       name: 'Ramita prensada',
-      cat: 'stickers',
+      cat: 'flores',
       width: 90,
       svg: `<svg viewBox="0 0 100 124" xmlns="http://www.w3.org/2000/svg">
         <path d="M46 116 Q54 70 48 16" fill="none" stroke="#6f8769" stroke-width="2.6" stroke-linecap="round"/>
@@ -539,6 +539,364 @@
         <ellipse cx="36" cy="54" rx="11" ry="4.5" fill="#89a382" transform="rotate(-30 36 54)"/>
         <circle cx="48" cy="18" r="7" fill="#e39a8e"/><circle cx="38" cy="30" r="6" fill="#f0b6ab"/>
         <circle cx="58" cy="32" r="6" fill="#e6a69b"/><circle cx="49" cy="40" r="5.5" fill="#f5d19c"/>
+      </svg>`
+    },
+
+    // ---------- MÁS FLORES ----------
+    {
+      type: 'fl-sunflower',
+      name: 'Girasol',
+      cat: 'flores',
+      width: 92,
+      svg: `<svg viewBox="0 0 110 118" xmlns="http://www.w3.org/2000/svg">
+        <path d="M55 112 V64" stroke="#6a8559" stroke-width="4" stroke-linecap="round"/>
+        <ellipse cx="42" cy="92" rx="13" ry="6" fill="#82a06c" transform="rotate(-24 42 92)"/>
+        <g fill="#f4c24d" stroke="#b57d24" stroke-width="1.3">
+          <ellipse cx="55" cy="20" rx="7" ry="14"/><ellipse cx="55" cy="72" rx="7" ry="14"/>
+          <ellipse cx="29" cy="46" rx="14" ry="7"/><ellipse cx="81" cy="46" rx="14" ry="7"/>
+          <ellipse cx="36" cy="28" rx="7" ry="13" transform="rotate(-45 36 28)"/><ellipse cx="74" cy="64" rx="7" ry="13" transform="rotate(-45 74 64)"/>
+          <ellipse cx="74" cy="28" rx="7" ry="13" transform="rotate(45 74 28)"/><ellipse cx="36" cy="64" rx="7" ry="13" transform="rotate(45 36 64)"/>
+        </g>
+        <circle cx="55" cy="46" r="16" fill="#5e3c26" stroke="#3e2516" stroke-width="2"/>
+        <circle cx="50" cy="42" r="2" fill="#8b6245"/><circle cx="60" cy="44" r="2" fill="#8b6245"/><circle cx="54" cy="51" r="2" fill="#8b6245"/>
+      </svg>`
+    },
+    {
+      type: 'fl-tulip',
+      name: 'Tulipanes',
+      cat: 'flores',
+      width: 92,
+      svg: `<svg viewBox="0 0 110 120" xmlns="http://www.w3.org/2000/svg">
+        <path d="M40 112 Q42 80 38 50 M72 112 Q68 80 74 44" fill="none" stroke="#6b8a64" stroke-width="3.2" stroke-linecap="round"/>
+        <path d="M40 94 Q22 76 26 58 Q40 70 42 92" fill="#85a67c"/>
+        <path d="M72 90 Q90 74 86 56 Q72 68 70 88" fill="#77966e"/>
+        <path d="M24 38 C24 56 52 56 52 38 C52 26 44 20 38 30 C32 20 24 26 24 38 Z" fill="#e88a96" stroke="#7d3b46" stroke-width="1.8"/>
+        <path d="M60 32 C60 50 88 50 88 32 C88 20 80 14 74 24 C68 14 60 20 60 32 Z" fill="#f2b294" stroke="#8c4b35" stroke-width="1.8"/>
+      </svg>`
+    },
+    {
+      type: 'fl-daisy',
+      name: 'Margaritas',
+      cat: 'flores',
+      width: 98,
+      svg: `<svg viewBox="0 0 120 96" xmlns="http://www.w3.org/2000/svg">
+        <g transform="translate(42,46)">
+          <g fill="#fffdf8" stroke="#c8bcab" stroke-width="1.3">
+            <ellipse cx="0" cy="-18" rx="6" ry="12"/><ellipse cx="0" cy="18" rx="6" ry="12"/>
+            <ellipse cx="-18" cy="0" rx="12" ry="6"/><ellipse cx="18" cy="0" rx="12" ry="6"/>
+            <ellipse cx="-13" cy="-13" rx="6" ry="11" transform="rotate(-45 -13 -13)"/><ellipse cx="13" cy="13" rx="6" ry="11" transform="rotate(-45 13 13)"/>
+            <ellipse cx="13" cy="-13" rx="6" ry="11" transform="rotate(45 13 -13)"/><ellipse cx="-13" cy="13" rx="6" ry="11" transform="rotate(45 -13 13)"/>
+          </g>
+          <circle cx="0" cy="0" r="9.5" fill="#f3c653" stroke="#c9952b" stroke-width="1.4"/>
+        </g>
+        <g transform="translate(86,62) scale(0.68)">
+          <g fill="#fffdf8" stroke="#c8bcab" stroke-width="1.5">
+            <ellipse cx="0" cy="-18" rx="6" ry="12"/><ellipse cx="0" cy="18" rx="6" ry="12"/>
+            <ellipse cx="-18" cy="0" rx="12" ry="6"/><ellipse cx="18" cy="0" rx="12" ry="6"/>
+            <ellipse cx="-13" cy="-13" rx="6" ry="11" transform="rotate(-45 -13 -13)"/><ellipse cx="13" cy="13" rx="6" ry="11" transform="rotate(-45 13 13)"/>
+          </g>
+          <circle cx="0" cy="0" r="9.5" fill="#f3c653"/>
+        </g>
+      </svg>`
+    },
+    {
+      type: 'fl-lavender',
+      name: 'Lavanda',
+      cat: 'flores',
+      width: 82,
+      svg: `<svg viewBox="0 0 92 126" xmlns="http://www.w3.org/2000/svg">
+        <path d="M46 118 Q44 74 48 16 M46 116 Q30 78 24 34 M46 116 Q64 80 70 36" fill="none" stroke="#6d8568" stroke-width="2.2" stroke-linecap="round"/>
+        <g fill="#9e7db5">
+          <ellipse cx="48" cy="20" rx="5" ry="7"/><ellipse cx="43" cy="30" rx="5" ry="6"/><ellipse cx="53" cy="32" rx="5" ry="6"/>
+          <ellipse cx="44" cy="44" rx="5" ry="6"/><ellipse cx="52" cy="46" rx="5" ry="6"/>
+          <ellipse cx="24" cy="34" rx="4.5" ry="6"/><ellipse cx="28" cy="46" rx="4.5" ry="6"/><ellipse cx="22" cy="54" rx="4.5" ry="5.5"/>
+          <ellipse cx="70" cy="36" rx="4.5" ry="6"/><ellipse cx="66" cy="48" rx="4.5" ry="6"/><ellipse cx="72" cy="56" rx="4.5" ry="5.5"/>
+        </g>
+        <path d="M36 96 Q46 90 56 96" fill="none" stroke="#d9a573" stroke-width="4" stroke-linecap="round"/>
+      </svg>`
+    },
+    {
+      type: 'fl-rose',
+      name: 'Rosa romántica',
+      cat: 'flores',
+      width: 86,
+      svg: `<svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+        <path d="M50 112 Q52 84 50 56" fill="none" stroke="#577853" stroke-width="3.2" stroke-linecap="round"/>
+        <ellipse cx="37" cy="84" rx="13" ry="6" fill="#6f946a" transform="rotate(-28 37 84)"/>
+        <ellipse cx="64" cy="76" rx="12" ry="5.5" fill="#6f946a" transform="rotate(24 64 76)"/>
+        <circle cx="50" cy="38" r="22" fill="#c94b5a" stroke="#7d2531" stroke-width="2"/>
+        <path d="M38 36 C38 26 62 24 62 38 C62 49 40 50 42 38 C43 31 55 31 54 38 C53 42 47 42 48 38" fill="none" stroke="#f7ccd2" stroke-width="2.4" stroke-linecap="round"/>
+      </svg>`
+    },
+    {
+      type: 'fl-bouquet',
+      name: 'Mini ramo',
+      cat: 'flores',
+      width: 98,
+      svg: `<svg viewBox="0 0 116 122" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="32,62 84,62 62,114 54,114" fill="#e6cfa9" stroke="#a6875c" stroke-width="2"/>
+        <circle cx="42" cy="46" r="14" fill="#e8949c"/><circle cx="74" cy="46" r="14" fill="#f3c57a"/>
+        <circle cx="58" cy="34" r="15" fill="#d96b64"/><circle cx="58" cy="54" r="12" fill="#fff8ec"/>
+        <circle cx="58" cy="54" r="4.5" fill="#e5b14c"/>
+        <path d="M45 86 H71" stroke="#c96052" stroke-width="4.5" stroke-linecap="round"/>
+      </svg>`
+    },
+
+    // ---------- ANIMALES DE MAR ----------
+    {
+      type: 'sea-whale',
+      name: 'Ballenita ♥',
+      cat: 'mar',
+      width: 112,
+      svg: `<svg viewBox="0 0 136 96" xmlns="http://www.w3.org/2000/svg">
+        <path d="M56 28 Q52 12 42 14 M56 28 Q60 12 70 14" fill="none" stroke="#8dc2d6" stroke-width="2.6" stroke-linecap="round"/>
+        <path d="M22 64 C20 38 48 28 76 34 C94 38 100 54 108 54 C114 54 118 42 126 38 C124 50 120 56 116 58 C122 62 126 68 128 74 C118 72 110 66 104 66 C88 78 30 82 22 64 Z" fill="#77a7c2" stroke="#365063" stroke-width="2.4" stroke-linejoin="round"/>
+        <path d="M24 64 C38 74 68 74 82 66 C66 64 42 62 24 64 Z" fill="#e8f3f8"/>
+        <circle cx="42" cy="52" r="3" fill="#233442"/>
+        <ellipse cx="49" cy="58" rx="4.5" ry="2.5" fill="#eb9aa0" opacity="0.7"/>
+      </svg>`
+    },
+    {
+      type: 'sea-turtle',
+      name: 'Tortuguita marina',
+      cat: 'mar',
+      width: 106,
+      svg: `<svg viewBox="0 0 130 92" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="38" cy="30" rx="14" ry="8" fill="#89b084" stroke="#3f593c" stroke-width="2.2" transform="rotate(-32 38 30)"/>
+        <ellipse cx="38" cy="64" rx="14" ry="8" fill="#89b084" stroke="#3f593c" stroke-width="2.2" transform="rotate(32 38 64)"/>
+        <ellipse cx="82" cy="32" rx="11" ry="6.5" fill="#89b084" stroke="#3f593c" stroke-width="2.2" transform="rotate(28 82 32)"/>
+        <ellipse cx="82" cy="62" rx="11" ry="6.5" fill="#89b084" stroke="#3f593c" stroke-width="2.2" transform="rotate(-28 82 62)"/>
+        <circle cx="104" cy="47" r="12" fill="#9bc296" stroke="#3f593c" stroke-width="2.2"/>
+        <circle cx="108" cy="44" r="2.4" fill="#243322"/>
+        <ellipse cx="62" cy="47" rx="30" ry="22" fill="#638760" stroke="#3f593c" stroke-width="2.5"/>
+        <polygon points="62,33 74,41 70,55 54,55 50,41" fill="#82a87e" stroke="#3f593c" stroke-width="1.6"/>
+      </svg>`
+    },
+    {
+      type: 'sea-octopus',
+      name: 'Pulpito tierno',
+      cat: 'mar',
+      width: 94,
+      svg: `<svg viewBox="0 0 110 108" xmlns="http://www.w3.org/2000/svg">
+        <path d="M26 70 Q14 84 22 94 M38 74 Q32 92 42 98 M55 76 Q55 94 64 98 M72 74 Q82 92 76 98 M84 70 Q98 84 90 94" fill="none" stroke="#e08998" stroke-width="8" stroke-linecap="round"/>
+        <ellipse cx="55" cy="46" rx="32" ry="30" fill="#eb9aa8" stroke="#7a3c48" stroke-width="2.4"/>
+        <circle cx="43" cy="48" r="3.4" fill="#3a1e24"/><circle cx="67" cy="48" r="3.4" fill="#3a1e24"/>
+        <ellipse cx="36" cy="55" rx="4.5" ry="2.6" fill="#d46376" opacity="0.65"/><ellipse cx="74" cy="55" rx="4.5" ry="2.6" fill="#d46376" opacity="0.65"/>
+        <path d="M49 56 Q55 61 61 56" fill="none" stroke="#3a1e24" stroke-width="2.2" stroke-linecap="round"/>
+      </svg>`
+    },
+    {
+      type: 'sea-starfish',
+      name: 'Estrella y caracol',
+      cat: 'mar',
+      width: 108,
+      svg: `<svg viewBox="0 0 130 92" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="44,12 54,34 78,36 60,52 66,76 44,64 22,76 28,52 10,36 34,34" fill="#f09a75" stroke="#994b30" stroke-width="2.2" stroke-linejoin="round"/>
+        <circle cx="44" cy="46" r="4" fill="#fce2c4"/>
+        <path d="M84 68 C82 50 96 36 112 44 C122 50 120 68 104 72 C94 74 86 72 84 68 Z" fill="#f3dfc4" stroke="#8f7254" stroke-width="2.2"/>
+        <path d="M104 58 C100 52 108 48 111 54 C113 60 102 66 94 60" fill="none" stroke="#8f7254" stroke-width="2" stroke-linecap="round"/>
+      </svg>`
+    },
+    {
+      type: 'sea-jellyfish',
+      name: 'Medusa',
+      cat: 'mar',
+      width: 82,
+      svg: `<svg viewBox="0 0 96 118" xmlns="http://www.w3.org/2000/svg">
+        <path d="M28 62 Q22 82 30 104 M42 64 Q48 86 40 110 M56 64 Q50 86 58 108 M70 62 Q76 82 68 102" fill="none" stroke="#b694d4" stroke-width="3" stroke-linecap="round"/>
+        <path d="M18 56 C18 22 78 22 78 56 C78 64 68 62 60 64 C52 66 44 66 36 64 C28 62 18 64 18 56 Z" fill="#d7bff0" stroke="#6b4e87" stroke-width="2.3"/>
+        <circle cx="38" cy="44" r="2.8" fill="#3f2b54"/><circle cx="58" cy="44" r="2.8" fill="#3f2b54"/>
+        <path d="M44 50 Q48 54 52 50" fill="none" stroke="#3f2b54" stroke-width="2" stroke-linecap="round"/>
+      </svg>`
+    },
+    {
+      type: 'sea-dolphin',
+      name: 'Delfín',
+      cat: 'mar',
+      width: 112,
+      svg: `<svg viewBox="0 0 136 92" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 72 Q42 26 92 26 C108 26 116 36 124 44 C114 48 106 48 98 48 C78 48 56 58 38 74 L24 82 L28 70 Z" fill="#82b5cc" stroke="#36576b" stroke-width="2.4" stroke-linejoin="round"/>
+        <path d="M62 28 L70 12 L78 27" fill="#82b5cc" stroke="#36576b" stroke-width="2.2" stroke-linejoin="round"/>
+        <circle cx="102" cy="36" r="2.6" fill="#233745"/>
+        <path d="M18 84 Q40 76 62 84 T106 84" fill="none" stroke="#9ecae0" stroke-width="2.4" stroke-linecap="round"/>
+      </svg>`
+    },
+
+    // ---------- JUEGOS ----------
+    {
+      type: 'game-controller',
+      name: 'Joystick retro',
+      cat: 'juegos',
+      width: 114,
+      svg: `<svg viewBox="0 0 140 88" xmlns="http://www.w3.org/2000/svg">
+        <path d="M36 22 H104 C122 22 132 42 126 62 C122 74 108 76 100 66 L90 54 H50 L40 66 C32 76 18 74 14 62 C8 42 18 22 36 22 Z" fill="#eae2d6" stroke="#453a36" stroke-width="2.6" stroke-linejoin="round"/>
+        <path d="M38 34 V52 M29 43 H47" stroke="#453a36" stroke-width="5" stroke-linecap="round"/>
+        <circle cx="102" cy="36" r="5" fill="#d45e53"/><circle cx="112" cy="45" r="5" fill="#e5b34c"/>
+        <circle cx="92" cy="45" r="5" fill="#6b9e78"/><circle cx="102" cy="54" r="5" fill="#6889b8"/>
+        <rect x="60" y="42" width="8" height="3.5" rx="1.5" fill="#7a6d66"/><rect x="72" y="42" width="8" height="3.5" rx="1.5" fill="#7a6d66"/>
+      </svg>`
+    },
+    {
+      type: 'game-console',
+      name: 'Consola portátil',
+      cat: 'juegos',
+      width: 80,
+      svg: `<svg viewBox="0 0 92 124" xmlns="http://www.w3.org/2000/svg">
+        <rect x="10" y="8" width="72" height="108" rx="10" fill="#e8dfd0" stroke="#453a35" stroke-width="2.6"/>
+        <rect x="18" y="18" width="56" height="42" rx="4" fill="#5e6958" stroke="#3a4236" stroke-width="2"/>
+        <rect x="24" y="24" width="44" height="30" fill="#a8bd98"/>
+        <path d="M46 35 c-2-3.5 -7-2 -7 1.5 c0 3.5 7 7.5 7 7.5 s7-4 7-7.5 c0-3.5 -5-5 -7-1.5z" fill="#3a4a34"/>
+        <path d="M30 76 V94 M21 85 H39" stroke="#3c3431" stroke-width="4.5" stroke-linecap="round"/>
+        <circle cx="62" cy="88" r="5.5" fill="#c95663"/><circle cx="72" cy="79" r="5.5" fill="#c95663"/>
+      </svg>`
+    },
+    {
+      type: 'game-dice',
+      name: 'Daditos',
+      cat: 'juegos',
+      width: 98,
+      svg: `<svg viewBox="0 0 116 86" xmlns="http://www.w3.org/2000/svg">
+        <g transform="rotate(-10 38 44)">
+          <rect x="12" y="18" width="48" height="48" rx="9" fill="#fffaf2" stroke="#473a34" stroke-width="2.5"/>
+          <circle cx="24" cy="30" r="3.6" fill="#473a34"/><circle cx="48" cy="30" r="3.6" fill="#473a34"/>
+          <circle cx="36" cy="42" r="3.6" fill="#c95a4e"/><circle cx="24" cy="54" r="3.6" fill="#473a34"/><circle cx="48" cy="54" r="3.6" fill="#473a34"/>
+        </g>
+        <g transform="rotate(12 80 48)">
+          <rect x="56" y="22" width="46" height="46" rx="9" fill="#f7e5cc" stroke="#473a34" stroke-width="2.5"/>
+          <circle cx="68" cy="34" r="3.4" fill="#473a34"/><circle cx="90" cy="34" r="3.4" fill="#473a34"/>
+          <circle cx="68" cy="45" r="3.4" fill="#473a34"/><circle cx="90" cy="45" r="3.4" fill="#473a34"/>
+          <circle cx="68" cy="56" r="3.4" fill="#473a34"/><circle cx="90" cy="56" r="3.4" fill="#473a34"/>
+        </g>
+      </svg>`
+    },
+    {
+      type: 'game-cards',
+      name: 'Cartas As de ♥',
+      cat: 'juegos',
+      width: 96,
+      svg: `<svg viewBox="0 0 112 106" xmlns="http://www.w3.org/2000/svg">
+        <g transform="rotate(-12 46 54)">
+          <rect x="18" y="16" width="54" height="76" rx="6" fill="#f6efe2" stroke="#4a3d36" stroke-width="2.2"/>
+          <text x="27" y="34" font-family="Georgia,serif" font-size="15" font-weight="700" fill="#c94f4d">6</text>
+        </g>
+        <g transform="rotate(8 68 54)">
+          <rect x="40" y="14" width="56" height="78" rx="6" fill="#fffdf9" stroke="#4a3d36" stroke-width="2.2"/>
+          <text x="48" y="32" font-family="Georgia,serif" font-size="16" font-weight="700" fill="#c94f4d">A</text>
+          <path d="M68 46 c-4-7 -14-4 -14 3 c0 7 14 15 14 15 s14-8 14-15 c0-7 -10-10 -14-3z" fill="#c94f4d"/>
+        </g>
+      </svg>`
+    },
+    {
+      type: 'game-hearts',
+      name: 'Vidas 8-bit ♥',
+      cat: 'juegos',
+      width: 118,
+      svg: `<svg viewBox="0 0 156 44" xmlns="http://www.w3.org/2000/svg">
+        <g fill="#d94e58" stroke="#591c22" stroke-width="1.5">
+          <path d="M12 10 h8 v4 h8 v-4 h8 v4 h4 v12 h-4 v4 h-4 v4 h-4 v4 h-8 v-4 h-4 v-4 h-4 v-4 h-4 v-12 h4 z"/>
+          <path d="M62 10 h8 v4 h8 v-4 h8 v4 h4 v12 h-4 v4 h-4 v4 h-4 v4 h-8 v-4 h-4 v-4 h-4 v-4 h-4 v-12 h4 z"/>
+          <path d="M112 10 h8 v4 h8 v-4 h8 v4 h4 v12 h-4 v4 h-4 v4 h-4 v4 h-8 v-4 h-4 v-4 h-4 v-4 h-4 v-12 h4 z"/>
+        </g>
+      </svg>`
+    },
+    {
+      type: 'game-chess',
+      name: 'Rey & Reina',
+      cat: 'juegos',
+      width: 96,
+      svg: `<svg viewBox="0 0 112 108" xmlns="http://www.w3.org/2000/svg">
+        <g fill="#fff8ec" stroke="#46372e" stroke-width="2.4" stroke-linejoin="round">
+          <path d="M34 14 V26 M28 20 H40"/>
+          <path d="M22 86 H46 L42 46 H26 Z"/>
+          <circle cx="34" cy="36" r="10"/>
+          <rect x="18" y="86" width="32" height="8" rx="3"/>
+        </g>
+        <g fill="#5b4842" stroke="#2c211d" stroke-width="2.4" stroke-linejoin="round">
+          <path d="M64 28 L70 38 L78 24 L86 38 L92 28 L88 46 H68 Z"/>
+          <path d="M66 86 H90 L86 46 H70 Z"/>
+          <rect x="62" y="86" width="32" height="8" rx="3"/>
+        </g>
+      </svg>`
+    },
+
+    // ---------- COMIDA ----------
+    {
+      type: 'food-pizza',
+      name: 'Porción de pizza',
+      cat: 'comida',
+      width: 92,
+      svg: `<svg viewBox="0 0 108 110" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18 28 Q54 12 90 28 L84 40 Q54 28 24 40 Z" fill="#d99a56" stroke="#6b4522" stroke-width="2.4" stroke-linejoin="round"/>
+        <polygon points="24,40 84,40 54,98" fill="#f7d06b" stroke="#6b4522" stroke-width="2.4" stroke-linejoin="round"/>
+        <circle cx="46" cy="52" r="6.5" fill="#c94b3e"/><circle cx="63" cy="58" r="6" fill="#c94b3e"/><circle cx="52" cy="74" r="5.5" fill="#c94b3e"/>
+        <ellipse cx="60" cy="46" rx="4" ry="2.2" fill="#6b9459" transform="rotate(-20 60 46)"/>
+      </svg>`
+    },
+    {
+      type: 'food-icecream',
+      name: 'Heladito',
+      cat: 'comida',
+      width: 78,
+      svg: `<svg viewBox="0 0 92 122" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="28,62 64,62 46,114" fill="#e5b87a" stroke="#7d5932" stroke-width="2.4" stroke-linejoin="round"/>
+        <line x1="34" y1="74" x2="54" y2="88" stroke="#b8894f" stroke-width="1.6"/>
+        <line x1="58" y1="74" x2="38" y2="88" stroke="#b8894f" stroke-width="1.6"/>
+        <circle cx="36" cy="52" r="16" fill="#f5b8c2" stroke="#854550" stroke-width="2.2"/>
+        <circle cx="56" cy="52" r="16" fill="#fdf1d6" stroke="#8c7551" stroke-width="2.2"/>
+        <circle cx="46" cy="34" r="16" fill="#a8d1b5" stroke="#4b7358" stroke-width="2.2"/>
+        <circle cx="46" cy="18" r="5" fill="#cf484e"/>
+      </svg>`
+    },
+    {
+      type: 'food-sushi',
+      name: 'Sushi tierno',
+      cat: 'comida',
+      width: 98,
+      svg: `<svg viewBox="0 0 120 88" xmlns="http://www.w3.org/2000/svg">
+        <rect x="18" y="34" width="54" height="34" rx="12" fill="#fffdf8" stroke="#3c322e" stroke-width="2.4"/>
+        <path d="M16 40 C24 22 66 22 74 40 C66 46 24 46 16 40 Z" fill="#ed8561" stroke="#8c3f26" stroke-width="2.2"/>
+        <rect x="40" y="25" width="10" height="44" fill="#2c332d"/>
+        <ellipse cx="92" cy="50" rx="18" ry="18" fill="#2c332d" stroke="#1a1e1a" stroke-width="2"/>
+        <ellipse cx="92" cy="50" rx="13" ry="13" fill="#fffdf8"/>
+        <circle cx="92" cy="50" r="6" fill="#ed8561"/>
+      </svg>`
+    },
+    {
+      type: 'food-cupcake',
+      name: 'Cupcake',
+      cat: 'comida',
+      width: 84,
+      svg: `<svg viewBox="0 0 98 110" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="24,62 74,62 66,98 32,98" fill="#e6b698" stroke="#784f39" stroke-width="2.4" stroke-linejoin="round"/>
+        <line x1="38" y1="62" x2="41" y2="98" stroke="#b58365" stroke-width="2"/>
+        <line x1="60" y1="62" x2="57" y2="98" stroke="#b58365" stroke-width="2"/>
+        <path d="M20 62 C18 44 34 40 34 40 C36 26 62 26 64 40 C64 40 80 44 78 62 Z" fill="#f7c8d0" stroke="#8c4c58" stroke-width="2.4" stroke-linejoin="round"/>
+        <circle cx="49" cy="22" r="7" fill="#cf484e" stroke="#6e1e23" stroke-width="1.8"/>
+        <circle cx="38" cy="50" r="2.2" fill="#f3c653"/><circle cx="58" cy="48" r="2.2" fill="#82b89a"/>
+      </svg>`
+    },
+    {
+      type: 'food-croissant',
+      name: 'Medialuna',
+      cat: 'comida',
+      width: 102,
+      svg: `<svg viewBox="0 0 124 84" xmlns="http://www.w3.org/2000/svg">
+        <path d="M16 58 C18 28 44 18 62 18 C80 18 106 28 108 58 C108 68 94 70 86 58 C78 46 46 46 38 58 C30 70 16 68 16 58 Z" fill="#e6a963" stroke="#7a4c1e" stroke-width="2.6" stroke-linejoin="round"/>
+        <path d="M44 22 Q48 38 42 52 M80 22 Q76 38 82 52 M62 18 V48" fill="none" stroke="#a6692b" stroke-width="2.2" stroke-linecap="round"/>
+      </svg>`
+    },
+    {
+      type: 'food-burger',
+      name: 'Hamburguesita',
+      cat: 'comida',
+      width: 96,
+      svg: `<svg viewBox="0 0 116 96" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18 46 C18 20 98 20 98 46 Z" fill="#e8ab61" stroke="#6e451e" stroke-width="2.5"/>
+        <circle cx="42" cy="32" r="2" fill="#fff5d9"/><circle cx="58" cy="28" r="2" fill="#fff5d9"/><circle cx="74" cy="33" r="2" fill="#fff5d9"/>
+        <path d="M14 50 Q26 44 38 50 T62 50 T86 50 T102 50" fill="none" stroke="#76a35d" stroke-width="6" stroke-linecap="round"/>
+        <rect x="16" y="54" width="84" height="14" rx="7" fill="#70412c" stroke="#3d2115" stroke-width="2.2"/>
+        <polygon points="28,54 58,54 44,64" fill="#f5c647"/>
+        <path d="M18 68 H98 V74 C98 82 90 84 58 84 C26 84 18 82 18 74 Z" fill="#e8ab61" stroke="#6e451e" stroke-width="2.5"/>
       </svg>`
     },
     {
