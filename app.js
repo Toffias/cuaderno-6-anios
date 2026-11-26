@@ -1427,11 +1427,7 @@
       const canvasBox = document.createElement('div');
       canvasBox.style.width = '100%';
       canvasBox.style.height = '100%';
-      const hint = document.createElement('span');
-      hint.className = 'hourglass-drag-hint';
-      hint.textContent = '↻ Girá el reloj 3D';
       host.appendChild(canvasBox);
-      host.appendChild(hint);
       interactiveLayer.appendChild(host);
 
       requestAnimationFrame(() => {
@@ -2354,8 +2350,14 @@
     }
   }
 
+  // Is sound actually coming out? (autoplay rules can keep audio silent until a user gesture)
+  function isAudioAudible() {
+    if (!bgAudio.paused) return true;
+    return !!(synthTimer && audioCtx && audioCtx.state === 'running');
+  }
+
   musicBtn.addEventListener('click', () => {
-    if (!musicPlaying) {
+    if (!musicPlaying || !isAudioAudible()) {
       musicPlaying = true;
       pausedByVideo = false;
       musicBtn.classList.add('playing');
@@ -2370,6 +2372,27 @@
       bgAudio.pause();
     }
   });
+
+  // Music is ON by default. Browsers block sound until the visitor interacts with
+  // the page, so it starts on the first click / key press (e.g. opening the cover).
+  musicPlaying = true;
+  musicBtn.classList.add('playing');
+  musicLabel.textContent = getActiveTrackInfo().label;
+
+  function startMusicOnFirstGesture(e) {
+    // A first click on the music button itself is handled by its own listener
+    if (e && e.target && musicBtn.contains(e.target)) { removeFirstGestureListeners(); return; }
+    removeFirstGestureListeners();
+    if (!musicPlaying || pausedByVideo || isAudioAudible()) return;
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+    startTrack(getActiveTrackInfo());
+  }
+  function removeFirstGestureListeners() {
+    ['click', 'keydown', 'touchend'].forEach((ev) =>
+      document.removeEventListener(ev, startMusicOnFirstGesture, true));
+  }
+  ['click', 'keydown', 'touchend'].forEach((ev) =>
+    document.addEventListener(ev, startMusicOnFirstGesture, true));
 
   // =========================================================================
   // 9. FLOATING DECORATION STUDIO (Drag from palette directly onto the page!)
