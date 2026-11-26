@@ -102,10 +102,35 @@ function readJsonBody(req, maxBytes = 5 * 1024 * 1024) {
   });
 }
 
+// Calendar day (YYYY-MM-DD) in Argentina, independent of the VPS timezone
+const SURPRISE_TIMEZONE = process.env.SURPRISE_TZ || 'America/Argentina/Buenos_Aires';
+function todayInSurpriseTimezone(ts) {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: SURPRISE_TIMEZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).format(new Date(ts));
+}
+
 function sanitizeAlbumForPublic(rawAlbum) {
   const now = Date.now();
   const cloned = JSON.parse(JSON.stringify(rawAlbum));
   cloned.serverNow = new Date(now).toISOString();
+
+  // Surprise messages: only today's message ever leaves the server, so it can't be
+  // read early (or late) by peeking at the page source or the API response.
+  const today = todayInSurpriseTimezone(now);
+  const surprises = Array.isArray(cloned.surpriseMessages) ? cloned.surpriseMessages : [];
+  cloned.surpriseMessages = surprises
+    .filter((m) => m && m.date === today && String(m.message || '').trim())
+    .map((m) => ({
+      id: String(m.id || m.date),
+      date: m.date,
+      title: String(m.title || ''),
+      message: String(m.message || ''),
+      signature: String(m.signature || '')
+    }));
 
   if (Array.isArray(cloned.chapters)) {
     cloned.chapters = cloned.chapters.map((ch) => {

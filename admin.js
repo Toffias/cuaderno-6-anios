@@ -189,6 +189,7 @@
   function renderSection() {
     if (activeSection === 'meta') renderMeta();
     else if (activeSection === 'dedication') renderDedication();
+    else if (activeSection === 'surprise') renderSurprises();
     else if (activeSection === 'security') renderSecurity();
     else if (activeSection.startsWith('ch-')) {
       renderChapter(Number(activeSection.replace('ch-', '')));
@@ -392,6 +393,108 @@
         renderDedication();
       };
     });
+  }
+
+  // ================= SURPRISE MESSAGES (one per day, readable only that day) =================
+  const SURPRISE_TZ = 'America/Argentina/Buenos_Aires';
+  function todayInArgentina() {
+    return new Intl.DateTimeFormat('en-CA', {
+      timeZone: SURPRISE_TZ, year: 'numeric', month: '2-digit', day: '2-digit'
+    }).format(new Date());
+  }
+  function prettyDay(ymd) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(ymd || '')) return '';
+    const [y, m, d] = ymd.split('-').map(Number);
+    return new Date(y, m - 1, d).toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  }
+  function surpriseStatus(m) {
+    if (!m.date) return { cls: 'locked', text: '📅 Elegí un día' };
+    const today = todayInArgentina();
+    if (m.date === today) return { cls: 'today', text: '✨ Se muestra HOY' };
+    if (m.date < today) return { cls: 'past', text: '✓ Ya pasó (' + prettyDay(m.date) + ')' };
+    return { cls: 'locked', text: '🔒 Se abre el ' + prettyDay(m.date) };
+  }
+
+  function renderSurprises() {
+    if (!Array.isArray(album.surpriseMessages)) album.surpriseMessages = [];
+    const list = album.surpriseMessages;
+    const takenDates = {};
+    list.forEach((m) => { if (m.date) takenDates[m.date] = (takenDates[m.date] || 0) + 1; });
+
+    editorMain.innerHTML = `
+      <section class="card">
+        <div class="card-head">
+          <h2>✨ Mensajes sorpresa</h2>
+          <button class="btn sm" id="addSurpriseBtn" type="button">+ Agregar mensaje</button>
+        </div>
+        <p class="surprise-intro">
+          Elegí un día y escribí el mensaje. Ese día, al entrar al cuaderno (en cualquier hoja), aparece un destello
+          y un sobre en el medio de la pantalla. Al tocarlo se abre y se lee el mensaje.
+          <b>Solo se puede abrir ese día</b> (hora de Argentina): antes o después, el mensaje no sale del servidor.
+        </p>
+        ${list.length === 0 ? `
+          <div class="empty-media">
+            <div style="font-size:2rem;">💌</div>
+            <strong>Todavía no hay mensajes sorpresa</strong>
+            <p>Tocá <b>+ Agregar mensaje</b> para programar el primero.</p>
+          </div>
+        ` : list.map((m, i) => {
+          const st = surpriseStatus(m);
+          return `
+          <div class="sub-item surprise-item">
+            <div class="sub-item-head">
+              <span class="schedule-pill ${st.cls}" data-surprise-status="${i}">${st.text}</span>
+              <button class="btn danger sm" data-del-surprise="${i}" type="button">Quitar</button>
+            </div>
+            <div class="grid-2">
+              <div class="field">
+                <label>Día en que aparece</label>
+                <input type="date" data-surprise-date="${i}" value="${esc(m.date)}" />
+                ${m.date && takenDates[m.date] > 1 ? '<small style="color:#9c5b15;">⚠ Hay otro mensaje ese mismo día: se muestra solo el primero de la lista.</small>' : ''}
+              </div>
+              <div class="field">
+                <label>Título (opcional)</label>
+                <input data-surprise="${i}:title" value="${esc(m.title)}" placeholder="Ej: Feliz 6 años, amor" />
+              </div>
+            </div>
+            <div class="field">
+              <label>Mensaje</label>
+              <textarea data-surprise="${i}:message" placeholder="Escribí acá lo que va a leer cuando abra el sobre...">${esc(m.message)}</textarea>
+            </div>
+            <div class="field">
+              <label>Firma (opcional)</label>
+              <input data-surprise="${i}:signature" value="${esc(m.signature)}" placeholder="Ej: Con todo mi amor, ..." />
+            </div>
+          </div>
+        `;
+        }).join('')}
+      </section>
+    `;
+
+    bindInput('[data-surprise]', (el) => {
+      const [i, key] = el.dataset.surprise.split(':');
+      list[Number(i)][key] = el.value;
+    });
+    editorMain.querySelectorAll('[data-surprise-date]').forEach((el) => {
+      el.addEventListener('change', () => {
+        list[Number(el.dataset.surpriseDate)].date = el.value;
+        markDirty(true);
+        renderSurprises();
+      });
+    });
+    editorMain.querySelectorAll('[data-del-surprise]').forEach((btn) => {
+      btn.onclick = () => {
+        if (!confirm('¿Quitar este mensaje sorpresa?')) return;
+        list.splice(Number(btn.dataset.delSurprise), 1);
+        markDirty(true);
+        renderSurprises();
+      };
+    });
+    document.getElementById('addSurpriseBtn').onclick = () => {
+      list.push({ id: 'sorpresa-' + Date.now(), date: '', title: '', message: '', signature: '' });
+      markDirty(true);
+      renderSurprises();
+    };
   }
 
   function renderChapter(idx) {

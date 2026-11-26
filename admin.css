@@ -453,6 +453,24 @@ body {
   color: #9c5b15;
 }
 
+.schedule-pill.past {
+  background: rgba(118, 98, 88, 0.12);
+  color: #6b5a52;
+}
+.schedule-pill.today {
+  background: rgba(196, 100, 85, 0.16);
+  color: #9e483b;
+}
+.surprise-intro {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+.surprise-item textarea {
+  min-height: 150px;
+}
+
 .schedule-row {
   display: flex;
   gap: 10px;

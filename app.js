@@ -2761,8 +2761,110 @@
   tickScheduledCountdowns();
   setInterval(tickScheduledCountdowns, 1000);
 
+  // =========================================================================
+  // SURPRISE MESSAGE OF THE DAY (set in /admin; the server only sends today's)
+  // =========================================================================
+  function setupSurpriseMessage() {
+    const msg = Array.isArray(DATA.surpriseMessages) ? DATA.surpriseMessages[0] : null;
+    if (!msg || !String(msg.message || '').trim()) return;
+
+    const esc = (v) => String(v ?? '')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    let prettyDate = '';
+    if (/^\d{4}-\d{2}-\d{2}$/.test(msg.date || '')) {
+      const [y, m, d] = msg.date.split('-').map(Number);
+      prettyDate = new Date(y, m - 1, d).toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' });
+    }
+
+    const overlay = document.createElement('div');
+    overlay.className = 'surprise-overlay';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('aria-label', 'Mensaje sorpresa');
+    overlay.innerHTML = `
+      <div class="surprise-flash"></div>
+      <div class="surprise-stage">
+        <div class="surprise-kicker">✨ Sorpresa de hoy ✨</div>
+        <button class="surprise-env" type="button" aria-label="Abrir el sobre">
+          <span class="env-back"></span>
+          <span class="env-letter"></span>
+          <span class="env-front"></span>
+          <span class="env-flap"></span>
+          <span class="env-seal">💌</span>
+        </button>
+        <div class="surprise-hint">Tenés un mensaje… tocá el sobre para abrirlo</div>
+      </div>
+      <article class="surprise-letter">
+        ${prettyDate ? `<div class="surprise-letter-date">${esc(prettyDate)}</div>` : ''}
+        ${msg.title ? `<h2>${esc(msg.title)}</h2>` : '<div style="height:12px"></div>'}
+        <div class="surprise-letter-body">${esc(msg.message)}</div>
+        ${msg.signature ? `<div class="surprise-letter-sign">${esc(msg.signature)}</div>` : ''}
+        <div class="surprise-letter-actions">
+          <button class="surprise-close-btn" type="button">Guardar en el corazón 💛</button>
+        </div>
+      </article>
+    `;
+    document.body.appendChild(overlay);
+
+    const reopenBtn = document.createElement('button');
+    reopenBtn.className = 'surprise-reopen';
+    reopenBtn.type = 'button';
+    reopenBtn.title = 'Volver a leer el mensaje sorpresa de hoy';
+    reopenBtn.setAttribute('aria-label', 'Volver a leer el mensaje sorpresa de hoy');
+    reopenBtn.textContent = '💌';
+    reopenBtn.hidden = true;
+    document.body.appendChild(reopenBtn);
+
+    const envBtn = overlay.querySelector('.surprise-env');
+    const closeBtn = overlay.querySelector('.surprise-close-btn');
+    let opening = false;
+
+    function showEnvelope() {
+      overlay.classList.remove('letter-open');
+      envBtn.classList.remove('opening');
+      opening = false;
+      reopenBtn.hidden = true;
+      // Restart the CSS entrance animations
+      overlay.classList.remove('show');
+      void overlay.offsetWidth;
+      overlay.classList.add('show');
+      setTimeout(() => spawnSparkles(window.innerWidth / 2, window.innerHeight / 2), 250);
+    }
+
+    function openLetter() {
+      if (opening) return;
+      opening = true;
+      envBtn.classList.add('opening');
+      const r = envBtn.getBoundingClientRect();
+      spawnSparkles(r.left + r.width / 2, r.top + r.height / 2);
+      setTimeout(() => overlay.classList.add('letter-open'), 1000);
+    }
+
+    function closeSurprise() {
+      overlay.classList.remove('show', 'letter-open');
+      reopenBtn.hidden = false;
+    }
+
+    envBtn.addEventListener('click', openLetter);
+    closeBtn.addEventListener('click', closeSurprise);
+    reopenBtn.addEventListener('click', () => {
+      showEnvelope();
+      // Already read today: open the letter right after the flash
+      setTimeout(openLetter, 900);
+    });
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay && overlay.classList.contains('letter-open')) closeSurprise();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && overlay.classList.contains('letter-open')) closeSurprise();
+    });
+
+    setTimeout(showEnvelope, 700);
+  }
+
   // Init
   updateGiftProgressUI();
   updateBookVisuals();
   renderInteractiveSpread();
+  setupSurpriseMessage();
 })();
