@@ -102,6 +102,43 @@ function readJsonBody(req, maxBytes = 5 * 1024 * 1024) {
   });
 }
 
+function sanitizeAlbumForPublic(rawAlbum) {
+  const now = Date.now();
+  const cloned = JSON.parse(JSON.stringify(rawAlbum));
+  cloned.serverNow = new Date(now).toISOString();
+
+  if (Array.isArray(cloned.chapters)) {
+    cloned.chapters = cloned.chapters.map((ch) => {
+      const unlockTs = ch.unlockAt ? Date.parse(ch.unlockAt) : NaN;
+      const isLocked = !Number.isNaN(unlockTs) && now < unlockTs;
+      if (!isLocked) {
+        return { ...ch, locked: false };
+      }
+      // Keep only non-spoiler metadata & giftNumber so progress tracker still knows total = 6
+      return {
+        id: ch.id,
+        tabLabel: ch.tabLabel,
+        tabColor: ch.tabColor,
+        yearLabel: ch.yearLabel,
+        shortTitle: ch.shortTitle,
+        unlockAt: ch.unlockAt,
+        locked: true,
+        leftPage: { title: ch.leftPage?.title || ch.tabLabel, story: '', hiddenNotes: [] },
+        rightPage: { title: '', story: '', hiddenNotes: [] },
+        polaroids: [],
+        envelopes: (ch.envelopes || []).map((e) => ({
+          id: e.id,
+          giftNumber: e.giftNumber,
+          resetVersion: e.resetVersion || 0,
+          lockedByChapter: true
+        })),
+        decorations: []
+      };
+    });
+  }
+  return cloned;
+}
+
 ensureInitialData();
 
 const server = http.createServer(async (req, res) => {
@@ -109,6 +146,20 @@ const server = http.createServer(async (req, res) => {
 
   // ================= API ROUTES =================
   if (cleanUrl === '/api/album' && req.method === 'GET') {
+    try {
+      const parsed = JSON.parse(fs.readFileSync(ALBUM_FILE, 'utf8'));
+      return sendJson(res, 200, sanitizeAlbumForPublic(parsed));
+    } catch {
+      return sendJson(res, 500, { error: 'No se pudo leer data/album.json' });
+    }
+  }
+
+  // Full unredacted album for /admin (PIN-protected)
+  if (cleanUrl === '/api/admin/album' && req.method === 'GET') {
+    const pin = req.headers['x-admin-pin'];
+    if (!verifyPin(pin)) {
+      return sendJson(res, 401, { ok: false, error: 'PIN inválido o no autorizado' });
+    }
     try {
       const raw = fs.readFileSync(ALBUM_FILE, 'utf8');
       res.writeHead(200, {

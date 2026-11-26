@@ -435,6 +435,35 @@ body {
 }
 .music-row input { flex: 1; }
 
+.schedule-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 999px;
+}
+.schedule-pill.open {
+  background: rgba(60, 125, 82, 0.13);
+  color: #2f6b43;
+}
+.schedule-pill.locked {
+  background: #fff0d6;
+  color: #9c5b15;
+}
+
+.schedule-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.schedule-row input[type="datetime-local"] {
+  flex: 1;
+  min-width: 220px;
+}
+
 @media (max-width: 680px) {
   .pol-admin-grid { grid-template-columns: 1fr; }
 }

@@ -626,7 +626,57 @@
   let topZ = 24;
   const customPositions = JSON.parse(localStorage.getItem('album_custom_positions_v1') || '{}');
   const customPolaroids = JSON.parse(localStorage.getItem('album_custom_polaroids_v1') || '{}');
-  const unlockedEnvelopes = new Set(JSON.parse(localStorage.getItem('album_unlocked_envs') || '[]'));
+
+  // Clock offset against server so scheduled unlocks stay accurate across devices
+  const serverClockOffsetMs = DATA.serverNow ? (Date.parse(DATA.serverNow) - Date.now()) : 0;
+  function getSyncedNow() {
+    return Date.now() + serverClockOffsetMs;
+  }
+  function isChapterLocked(ch) {
+    if (!ch) return false;
+    if (ch.unlockAt) {
+      const ts = Date.parse(ch.unlockAt);
+      if (!Number.isNaN(ts)) return getSyncedNow() < ts;
+    }
+    return Boolean(ch.locked);
+  }
+  function formatUnlockDate(iso) {
+    if (!iso) return '';
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return '';
+    return d.toLocaleString('es-AR', {
+      day: 'numeric',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  // Version-aware unlocked envelopes (so resetting a gift in /admin locks it across ALL devices!)
+  const unlockedEnvelopeVersions = (() => {
+    try {
+      const raw = JSON.parse(localStorage.getItem('album_unlocked_envs_v2') || 'null');
+      if (raw && typeof raw === 'object' && !Array.isArray(raw)) return raw;
+      // Migrate legacy v1 array cleanly
+      const legacy = JSON.parse(localStorage.getItem('album_unlocked_envs') || '[]');
+      const migrated = {};
+      if (Array.isArray(legacy)) legacy.forEach(id => { migrated[id] = 0; });
+      localStorage.setItem('album_unlocked_envs_v2', JSON.stringify(migrated));
+      return migrated;
+    } catch {
+      return {};
+    }
+  })();
+
+  function isEnvelopeUnlocked(env) {
+    if (!env || env.lockedByChapter) return false;
+    const expectedVer = Number(env.resetVersion || 0);
+    return unlockedEnvelopeVersions[env.id] === expectedVer;
+  }
+  function markEnvelopeUnlocked(env) {
+    unlockedEnvelopeVersions[env.id] = Number(env.resetVersion || 0);
+    localStorage.setItem('album_unlocked_envs_v2', JSON.stringify(unlockedEnvelopeVersions));
+  }
 
   function savePositions() {
     localStorage.setItem('album_custom_positions_v1', JSON.stringify(customPositions));
@@ -676,7 +726,7 @@
 
   function updateGiftProgressUI() {
     const total = allEnvelopes.length;
-    const unlockedCount = allEnvelopes.filter(e => unlockedEnvelopes.has(e.id)).length;
+    const unlockedCount = allEnvelopes.filter(e => isEnvelopeUnlocked(e)).length;
     giftProgressText.textContent = unlockedCount === total
       ? `¡${unlockedCount} / ${total} regalos encontrados! ✨`
       : `${unlockedCount} / ${total} regalos`;
@@ -684,11 +734,22 @@
 
     // Sync badges inside the Index page
     bookEl.querySelectorAll('.idx-gift-badge').forEach(badge => {
+      const chId = badge.dataset.chId;
+      const ch = DATA.chapters.find(c => c.id === chId);
       const envId = badge.dataset.envId;
       const num = badge.dataset.giftNum;
-      const isOpen = unlockedEnvelopes.has(envId);
-      badge.classList.toggle('unlocked', isOpen);
-      badge.textContent = isOpen ? `🎁 #${num} ✓` : `🔒 Regalo #${num}`;
+      const env = allEnvelopes.find(e => e.id === envId);
+
+      if (ch && isChapterLocked(ch)) {
+        badge.classList.remove('unlocked');
+        badge.classList.add('scheduled');
+        badge.textContent = `⏳ ${formatUnlockDate(ch.unlockAt)}`;
+      } else {
+        badge.classList.remove('scheduled');
+        const isOpen = isEnvelopeUnlocked(env);
+        badge.classList.toggle('unlocked', isOpen);
+        badge.textContent = isOpen ? `🎁 #${num} ✓` : `🔒 Regalo #${num}`;
+      }
     });
   }
 
@@ -744,7 +805,7 @@
           ${DATA.chapters.map((ch, i) => {
             const env = (ch.envelopes || [])[0];
             const giftBadge = env
-              ? `<span class="idx-gift-badge" data-env-id="${env.id}" data-gift-num="${env.giftNumber || (i + 1)}">🔒 Regalo #${env.giftNumber || (i + 1)}</span>`
+              ? `<span class="idx-gift-badge" data-ch-id="${ch.id}" data-env-id="${env.id}" data-gift-num="${env.giftNumber || (i + 1)}">🔒 Regalo #${env.giftNumber || (i + 1)}</span>`
               : '';
             return `
             <li class="index-item" data-jump-spread="${i + 2}">
@@ -764,6 +825,49 @@
   function buildChapterSideHTML(ch, side, pageNum) {
     const cfg = side === 'left' ? ch.leftPage : ch.rightPage;
     const faceClass = side === 'left' ? 'back' : 'front';
+
+    if (isChapterLocked(ch)) {
+      if (side === 'left') {
+        return `
+          <div class="face ${faceClass} paper-face" data-locked-chapter="${ch.id}">
+            <div class="page-header">
+              <span class="chapter-kicker">${ch.yearLabel}</span>
+              <span class="page-number">p. ${String(pageNum).padStart(2, '0')}</span>
+            </div>
+            <div class="locked-chapter-box">
+              <div class="locked-seal-icon">⏳</div>
+              <h2 class="page-heading" style="margin:0;">Capítulo sellado</h2>
+              <p class="page-story" style="max-width:340px;">
+                Este capítulo todavía guarda sus recuerdos y la pista de tu regalo… ¡volvé cuando termine la cuenta regresiva!
+              </p>
+              <span class="locked-date-pill">📅 Se habilita el ${formatUnlockDate(ch.unlockAt)}</span>
+            </div>
+          </div>
+        `;
+      }
+      return `
+        <div class="face ${faceClass} paper-face" data-locked-chapter="${ch.id}">
+          <div class="page-header">
+            <span class="chapter-kicker">${ch.yearLabel}</span>
+            <span class="page-number">p. ${String(pageNum).padStart(2, '0')}</span>
+          </div>
+          <div class="locked-chapter-box">
+            <div style="font-size:0.74rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--accent); font-weight:700;">Cuenta regresiva</div>
+            <h2 class="page-heading" style="margin:0;">Falta poquito... ♥</h2>
+            <div class="countdown-grid" data-countdown-for="${ch.id}" data-unlock-at="${ch.unlockAt}">
+              <div class="cd-cell"><b data-cd="d">--</b><small>Días</small></div>
+              <div class="cd-cell"><b data-cd="h">--</b><small>Horas</small></div>
+              <div class="cd-cell"><b data-cd="m">--</b><small>Min</small></div>
+              <div class="cd-cell"><b data-cd="s">--</b><small>Seg</small></div>
+            </div>
+            <p style="font-family:'Caveat',cursive; font-size:1.35rem; color:#6a5248; margin-top:4px;">
+              Apenas llegue a cero, este capítulo se abre solo ✨
+            </p>
+          </div>
+        </div>
+      `;
+    }
+
     return `
       <div class="face ${faceClass} paper-face">
         <div class="page-header">
@@ -848,13 +952,18 @@
 
   // Build chapter bookmark tabs
   const tabsData = [
-    { label: 'Índice', spread: 1, color: '#f2e6cf' },
-    ...DATA.chapters.map((ch, i) => ({ label: ch.tabLabel, spread: i + 2, color: ch.tabColor }))
+    { label: 'Índice', spread: 1, color: '#f2e6cf', locked: false },
+    ...DATA.chapters.map((ch, i) => ({
+      label: isChapterLocked(ch) ? `🔒 ${ch.tabLabel}` : ch.tabLabel,
+      spread: i + 2,
+      color: ch.tabColor,
+      locked: isChapterLocked(ch)
+    }))
   ];
 
   tabsData.forEach(t => {
     const btn = document.createElement('button');
-    btn.className = 'chapter-tab';
+    btn.className = 'chapter-tab' + (t.locked ? ' locked-tab' : '');
     btn.textContent = t.label;
     btn.style.background = t.color;
     btn.dataset.spread = t.spread;
@@ -906,6 +1015,12 @@
 
     const chapter = DATA.chapters[currentSpread - 2];
     if (!chapter) return;
+
+    if (isChapterLocked(chapter)) {
+      resetLayoutBtn.style.opacity = '0.35';
+      resetLayoutBtn.disabled = true;
+      return;
+    }
 
     resetLayoutBtn.style.opacity = '1';
     resetLayoutBtn.disabled = false;
@@ -990,7 +1105,7 @@
 
     // Render Draggable Secret Envelopes
     (chapter.envelopes || []).forEach(env => {
-      const isUnlocked = unlockedEnvelopes.has(env.id);
+      const isUnlocked = isEnvelopeUnlocked(env);
       const pos = customPositions[env.id] || { x: env.x, y: env.y, rot: env.rot };
       const el = document.createElement('div');
       el.className = 'secret-envelope-item' + (isUnlocked ? ' unlocked' : '');
@@ -1380,7 +1495,7 @@
   }
 
   function openEnvelopeModal(env) {
-    if (unlockedEnvelopes.has(env.id)) {
+    if (isEnvelopeUnlocked(env)) {
       renderUnlockedLetter(env);
       envelopeModal.classList.add('open');
       envelopeModal.setAttribute('aria-hidden', 'false');
@@ -1408,11 +1523,10 @@
       const entered = input.value.trim().toUpperCase();
       const expected = String(env.code).trim().toUpperCase();
       if (entered === expected || (expected === '6' && entered === '06')) {
-        unlockedEnvelopes.add(env.id);
-        localStorage.setItem('album_unlocked_envs', JSON.stringify([...unlockedEnvelopes]));
+        markEnvelopeUnlocked(env);
         spawnSparkles(window.innerWidth / 2, window.innerHeight / 2);
         updateGiftProgressUI();
-        if (allEnvelopes.every(x => unlockedEnvelopes.has(x.id))) {
+        if (allEnvelopes.every(x => isEnvelopeUnlocked(x))) {
           setTimeout(() => spawnSparkles(window.innerWidth * 0.35, window.innerHeight * 0.4), 220);
           setTimeout(() => spawnSparkles(window.innerWidth * 0.65, window.innerHeight * 0.4), 420);
         }
@@ -1722,6 +1836,10 @@
       return;
     }
     const ch = DATA.chapters[currentSpread - 2];
+    if (isChapterLocked(ch)) {
+      showDecorToast('Este capítulo todavía está sellado ⏳');
+      return;
+    }
     const arr = getChapterDecors(ch);
     arr.push({
       id: 'dec-' + Date.now() + '-' + Math.floor(Math.random() * 999),
@@ -1869,6 +1987,11 @@
     if (currentSpread < 2 || currentSpread >= TOTAL_SPREADS) {
       jumpToSpread(2);
     }
+    const ch = DATA.chapters[currentSpread - 2];
+    if (ch && isChapterLocked(ch)) {
+      showDecorToast('Este capítulo todavía está sellado ⏳');
+      return;
+    }
     pendingPolaroidDataUrl = '';
     addPolaroidForm.reset();
     photoDropzone.classList.remove('has-img');
@@ -1960,6 +2083,42 @@
   });
 
   renderDecorPalette();
+
+  // Live countdown ticker for scheduled chapters (auto-reloads cleanly when a chapter unlocks!)
+  let unlockReloadTriggered = false;
+  function tickScheduledCountdowns() {
+    const grids = bookEl.querySelectorAll('.countdown-grid[data-unlock-at]');
+    if (!grids.length) return;
+    const now = getSyncedNow();
+    grids.forEach(grid => {
+      const targetTs = Date.parse(grid.dataset.unlockAt);
+      if (Number.isNaN(targetTs)) return;
+      const diff = targetTs - now;
+      if (diff <= 0) {
+        grid.querySelector('[data-cd="d"]').textContent = '00';
+        grid.querySelector('[data-cd="h"]').textContent = '00';
+        grid.querySelector('[data-cd="m"]').textContent = '00';
+        grid.querySelector('[data-cd="s"]').textContent = '00';
+        if (!unlockReloadTriggered) {
+          unlockReloadTriggered = true;
+          spawnSparkles(window.innerWidth / 2, window.innerHeight / 2);
+          setTimeout(() => window.location.reload(), 1200);
+        }
+        return;
+      }
+      const totalSec = Math.floor(diff / 1000);
+      const d = Math.floor(totalSec / 86400);
+      const h = Math.floor((totalSec % 86400) / 3600);
+      const m = Math.floor((totalSec % 3600) / 60);
+      const s = totalSec % 60;
+      grid.querySelector('[data-cd="d"]').textContent = String(d).padStart(2, '0');
+      grid.querySelector('[data-cd="h"]').textContent = String(h).padStart(2, '0');
+      grid.querySelector('[data-cd="m"]').textContent = String(m).padStart(2, '0');
+      grid.querySelector('[data-cd="s"]').textContent = String(s).padStart(2, '0');
+    });
+  }
+  tickScheduledCountdowns();
+  setInterval(tickScheduledCountdowns, 1000);
 
   // Init
   updateGiftProgressUI();

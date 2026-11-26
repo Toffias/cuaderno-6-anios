@@ -47,7 +47,8 @@
           "giftClue": "📍 Buscá donde siempre guardamos las tazas del desayuno… ¡hay algo esperándote atrás de tu taza favorita!",
           "x": 76,
           "y": 62,
-          "rot": -3.5
+          "rot": -3.5,
+          "resetVersion": 1
         }
       ],
       "decorations": []
@@ -81,10 +82,12 @@
           "giftClue": "📍 Revisá adentro de la valija o mochila que usamos cuando salimos de viaje…",
           "x": 76,
           "y": 62,
-          "rot": -2.5
+          "rot": -2.5,
+          "resetVersion": 1
         }
       ],
-      "decorations": []
+      "decorations": [],
+      "unlockAt": ""
     },
     {
       "id": "anio-3",
@@ -115,7 +118,8 @@
           "giftClue": "📍 Fijate en el cajón donde guardás tus bufandas o camperas de invierno…",
           "x": 76,
           "y": 62,
-          "rot": 3
+          "rot": 3,
+          "resetVersion": 1
         }
       ],
       "decorations": []
@@ -149,7 +153,8 @@
           "giftClue": "📍 Mirá entre los libros o adornos del mueble del living… ¡ahí hay una sorpresa!",
           "x": 76,
           "y": 62,
-          "rot": 2.5
+          "rot": 2.5,
+          "resetVersion": 1
         }
       ],
       "decorations": []
@@ -183,7 +188,8 @@
           "giftClue": "📍 Buscá debajo de los almohadones del sillón donde siempre vemos pelis…",
           "x": 76,
           "y": 62,
-          "rot": -3
+          "rot": -3,
+          "resetVersion": 1
         }
       ],
       "decorations": []
@@ -217,7 +223,8 @@
           "giftClue": "📍 El último regalo está escondido en el lugar donde apoyás la cabeza cada noche… ¡mirá en tu mesa de luz / debajo de la almohada!",
           "x": 76,
           "y": 62,
-          "rot": -3
+          "rot": -3,
+          "resetVersion": 1
         }
       ],
       "decorations": []

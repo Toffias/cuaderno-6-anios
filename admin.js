@@ -46,7 +46,10 @@
     });
     if (!res.ok) return false;
 
-    const dataRes = await fetch('/api/album', { cache: 'no-store' });
+    const dataRes = await fetch('/api/admin/album', {
+      cache: 'no-store',
+      headers: { 'X-Admin-Pin': pin }
+    });
     if (!dataRes.ok) throw new Error('No se pudo leer data/album.json');
     album = await dataRes.json();
 
@@ -95,10 +98,61 @@
     pinInput.focus();
   }
 
+  // Convert stored ISO string (with tz offset) -> local YYYY-MM-DDTHH:mm for <input type="datetime-local">
+  function isoToLocalInputValue(iso) {
+    if (!iso) return '';
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return '';
+    const pad = (n) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
+  // Convert <input type="datetime-local"> value -> ISO string preserving user's local timezone offset (e.g. -03:00)
+  function localInputToIsoWithOffset(localVal) {
+    if (!localVal) return '';
+    const d = new Date(localVal);
+    if (Number.isNaN(d.getTime())) return '';
+    const offsetMin = -d.getTimezoneOffset();
+    const sign = offsetMin >= 0 ? '+' : '-';
+    const absMin = Math.abs(offsetMin);
+    const pad = (n) => String(n).padStart(2, '0');
+    const hh = pad(Math.floor(absMin / 60));
+    const mm = pad(absMin % 60);
+    return `${localVal}:00${sign}${hh}:${mm}`;
+  }
+
+  function isFutureUnlock(iso) {
+    if (!iso) return false;
+    const ts = Date.parse(iso);
+    return !Number.isNaN(ts) && ts > Date.now();
+  }
+
+  function formatPrettyDate(iso) {
+    if (!iso) return '';
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return '';
+    return d.toLocaleString('es-AR', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  }
+
+  function clearLocalUnlockedGift(envId) {
+    try {
+      const v2 = JSON.parse(localStorage.getItem('album_unlocked_envs_v2') || '{}');
+      if (envId) delete v2[envId];
+      else Object.keys(v2).forEach(k => delete v2[k]);
+      localStorage.setItem('album_unlocked_envs_v2', JSON.stringify(v2));
+
+      const v1 = JSON.parse(localStorage.getItem('album_unlocked_envs') || '[]');
+      if (Array.isArray(v1)) {
+        const nextV1 = envId ? v1.filter(id => id !== envId) : [];
+        localStorage.setItem('album_unlocked_envs', JSON.stringify(nextV1));
+      }
+    } catch {}
+  }
+
   function buildChapterSidebar() {
     chapterTabsNav.innerHTML = album.chapters.map((ch, idx) => `
-      <button class="side-tab" data-section="ch-${idx}">
-        🎁 ${esc(ch.tabLabel)} · ${esc(ch.shortTitle)}
+      <button class="side-tab ${activeSection === 'ch-' + idx ? 'active' : ''}" data-section="ch-${idx}">
+        ${isFutureUnlock(ch.unlockAt) ? '⏳' : '🎁'} ${esc(ch.tabLabel)} · ${esc(ch.shortTitle)}
       </button>
     `).join('');
 
@@ -236,11 +290,35 @@
           <input data-key="backSubtitle" value="${esc(m.backSubtitle)}" />
         </div>
       </section>
+
+      <section class="card highlight-gift">
+        <div class="card-head">
+          <h2>🎁 Estado de los 6 Regalos</h2>
+          <button class="btn danger sm" id="resetAllGiftsBtn" type="button">🔄 Resetear los 6 regalos (volver a 0/6)</button>
+        </div>
+        <p style="font-size:0.86rem; color:var(--muted); line-height:1.55;">
+          Si abriste sobres para probar las contraseñas, usá este botón para <b>volver a cerrar todos los regalos</b> (se reinician en tu navegador y en cualquier celular/navegador donde los hayas probado). También podés resetear un solo regalo desde su capítulo.
+        </p>
+      </section>
     `;
 
     bindInput('[data-key]', (el) => {
       album.meta[el.dataset.key] = el.value;
     });
+
+    document.getElementById('resetAllGiftsBtn').onclick = async () => {
+      album.chapters.forEach(ch => {
+        (ch.envelopes || []).forEach(env => {
+          env.resetVersion = Number(env.resetVersion || 0) + 1;
+        });
+      });
+      clearLocalUnlockedGift(null);
+      try {
+        await saveAlbumToDisk('🔒 ¡Los 6 regalos volvieron a quedar cerrados (0/6)!');
+      } catch (err) {
+        showToast('❌ ' + err.message);
+      }
+    };
 
     document.getElementById('musicUploadInput').addEventListener('change', async (e) => {
       const file = e.target.files && e.target.files[0];
@@ -334,7 +412,25 @@
       </div>
     `;
 
+    const lockedNow = isFutureUnlock(ch.unlockAt);
     editorMain.innerHTML = `
+      <section class="card">
+        <div class="card-head">
+          <h2>⏳ Fecha y hora de habilitación (${esc(ch.tabLabel)})</h2>
+          <span class="schedule-pill ${lockedNow ? 'locked' : 'open'}" id="chScheduleBadge">
+            ${lockedNow ? '⏳ Sellado hasta el ' + formatPrettyDate(ch.unlockAt) : '🔓 Habilitado ahora'}
+          </span>
+        </div>
+        <div class="field">
+          <label>¿Cuándo querés que se habilite este capítulo? (dejalo vacío para que esté abierto ya)</label>
+          <div class="schedule-row">
+            <input type="datetime-local" id="chUnlockInput" value="${esc(isoToLocalInputValue(ch.unlockAt))}" />
+            <button class="btn sm" id="clearUnlockBtn" type="button">🔓 Liberar ahora</button>
+          </div>
+          <small>Mientras falte para esa fecha y hora, el cuaderno muestra una cuenta regresiva en vivo y oculta las fotos y la pista del regalo.</small>
+        </div>
+      </section>
+
       <section class="card">
         <div class="card-head">
           <h2>📅 ${esc(ch.tabLabel)} · Encabezado y Textos de Hoja</h2>
@@ -364,6 +460,7 @@
       <section class="card highlight-gift">
         <div class="card-head">
           <h2>🎁 Sobre Secreto y Pista del Regalo (${esc(ch.tabLabel)})</h2>
+          ${ch.envelopes.length ? `<button class="btn danger sm" id="resetChapterGiftBtn" type="button">🔄 Volver a cerrar este regalo</button>` : ''}
         </div>
         ${ch.envelopes.map((env, ei) => `
           <div class="sub-item" style="background:#fffdf9;">
@@ -468,11 +565,46 @@
       </section>
     `;
 
+    const unlockInput = document.getElementById('chUnlockInput');
+    const scheduleBadge = document.getElementById('chScheduleBadge');
+    function refreshScheduleBadge() {
+      const isFut = isFutureUnlock(ch.unlockAt);
+      scheduleBadge.className = 'schedule-pill ' + (isFut ? 'locked' : 'open');
+      scheduleBadge.textContent = isFut ? ('⏳ Sellado hasta el ' + formatPrettyDate(ch.unlockAt)) : '🔓 Habilitado ahora';
+      const navBtn = chapterTabsNav.querySelector(`[data-section="ch-${idx}"]`);
+      if (navBtn) navBtn.textContent = `${isFut ? '⏳' : '🎁'} ${ch.tabLabel} · ${ch.shortTitle}`;
+    }
+    unlockInput.addEventListener('change', () => {
+      ch.unlockAt = localInputToIsoWithOffset(unlockInput.value);
+      markDirty(true);
+      refreshScheduleBadge();
+    });
+    document.getElementById('clearUnlockBtn').onclick = () => {
+      ch.unlockAt = '';
+      unlockInput.value = '';
+      markDirty(true);
+      refreshScheduleBadge();
+    };
+
+    const resetChapterGiftBtn = document.getElementById('resetChapterGiftBtn');
+    if (resetChapterGiftBtn) {
+      resetChapterGiftBtn.onclick = async () => {
+        ch.envelopes.forEach(env => {
+          env.resetVersion = Number(env.resetVersion || 0) + 1;
+          clearLocalUnlockedGift(env.id);
+        });
+        try {
+          await saveAlbumToDisk(`🔒 Regalo de ${ch.tabLabel} vuelto a cerrar`);
+        } catch (err) {
+          showToast('❌ ' + err.message);
+        }
+      };
+    }
+
     bindInput('[data-ch]', (el) => {
       ch[el.dataset.ch] = el.value;
       if (el.dataset.ch === 'tabLabel' || el.dataset.ch === 'shortTitle') {
-        const navBtn = chapterTabsNav.querySelector(`[data-section="ch-${idx}"]`);
-        if (navBtn) navBtn.textContent = `🎁 ${ch.tabLabel} · ${ch.shortTitle}`;
+        refreshScheduleBadge();
       }
     });
 

@@ -186,7 +186,7 @@ html, body {
 .chapter-tabs {
   position: absolute;
   top: 44px;
-  right: -46px;
+  right: -58px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -203,17 +203,18 @@ html, body {
 }
 
 .chapter-tab {
-  width: 58px;
-  padding: 9px 6px 9px 14px;
+  width: 70px;
+  padding: 9px 7px 9px 14px;
   border-radius: 0 10px 10px 0;
   border: 1px solid rgba(53, 40, 35, 0.16);
   border-left: none;
   font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
   color: #3a2a24;
   cursor: pointer;
   text-align: left;
+  white-space: nowrap;
   box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.28);
   transition: transform 0.22s ease, filter 0.22s ease;
   transform: translateX(-10px);
@@ -224,6 +225,74 @@ html, body {
   color: #fff;
   background: var(--accent) !important;
   box-shadow: 6px 6px 16px rgba(0, 0, 0, 0.36);
+}
+.chapter-tab.locked-tab {
+  opacity: 0.72;
+  filter: saturate(0.55);
+}
+
+/* Sealed / Scheduled chapter pages */
+.locked-chapter-box {
+  margin: auto 0;
+  padding: 26px 22px;
+  border-radius: 16px;
+  background: rgba(255, 253, 248, 0.75);
+  border: 1.5px dashed rgba(196, 100, 85, 0.36);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.locked-seal-icon {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #dc7c6d, #9d3a31);
+  color: #fcebd2;
+  display: grid;
+  place-items: center;
+  font-size: 1.6rem;
+  box-shadow: 0 10px 22px rgba(157, 58, 49, 0.3);
+}
+.locked-date-pill {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--accent-dark);
+  background: rgba(196, 100, 85, 0.12);
+  padding: 5px 12px;
+  border-radius: 999px;
+}
+.countdown-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(56px, 72px));
+  gap: 8px;
+  margin-top: 6px;
+}
+.cd-cell {
+  background: #fff;
+  border: 1px solid rgba(118, 98, 88, 0.16);
+  border-radius: 10px;
+  padding: 8px 4px;
+  box-shadow: 0 4px 12px rgba(53, 40, 35, 0.06);
+}
+.cd-cell b {
+  display: block;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.65rem;
+  line-height: 1;
+  color: var(--accent-dark);
+}
+.cd-cell small {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.idx-gift-badge.scheduled {
+  background: rgba(140, 114, 96, 0.14);
+  color: #6f594d !important;
 }
 
 /* ================= 3D SHEETS & PAGES ================= */
