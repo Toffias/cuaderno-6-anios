@@ -1979,6 +1979,56 @@
   const closeVideoBtn = document.getElementById('closeVideoBtn');
 
   let activeVideoOriginRect = null;
+  let activeVideoAspect = 16 / 9;
+
+  // Fit the player to the video's real proportions inside the viewport,
+  // leaving room for the title bar on top so it never covers the video.
+  function getFittedVideoRect(aspect) {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const sideMargin = vw < 640 ? 12 : 32;
+    const overlay = videoPortal.querySelector('.video-overlay-top');
+    const topReserved = Math.min(Math.max(overlay ? overlay.offsetHeight : 100, 72), vh * 0.3);
+    const bottomMargin = vw < 640 ? 12 : 28;
+    const maxW = Math.max(vw - sideMargin * 2, 100);
+    const maxH = Math.max(vh - topReserved - bottomMargin, 100);
+    let w = maxW;
+    let h = w / aspect;
+    if (h > maxH) {
+      h = maxH;
+      w = h * aspect;
+    }
+    return {
+      top: topReserved + (maxH - h) / 2,
+      left: (vw - w) / 2,
+      width: w,
+      height: h
+    };
+  }
+
+  function applyFittedVideoRect() {
+    const r = getFittedVideoRect(activeVideoAspect);
+    videoPortalFrame.style.top = r.top + 'px';
+    videoPortalFrame.style.left = r.left + 'px';
+    videoPortalFrame.style.width = r.width + 'px';
+    videoPortalFrame.style.height = r.height + 'px';
+    videoPortalFrame.style.borderRadius = '10px';
+  }
+
+  realVideo.addEventListener('loadedmetadata', () => {
+    if (!realVideo.videoWidth || !realVideo.videoHeight) return;
+    activeVideoAspect = realVideo.videoWidth / realVideo.videoHeight;
+    if (videoPortal.classList.contains('expanded')) applyFittedVideoRect();
+  });
+
+  window.addEventListener('resize', () => {
+    if (videoPortal.classList.contains('expanded')) {
+      videoPortalFrame.style.transition = 'none';
+      applyFittedVideoRect();
+      void videoPortalFrame.offsetWidth;
+      videoPortalFrame.style.transition = '';
+    }
+  });
   let demoAnimId = null;
   let demoPlaying = true;
   let demoElapsed = 0;
@@ -2005,6 +2055,12 @@
     pauseMusicForVideo();
 
     // Setup real <video> vs animated romantic demo canvas
+    // Start from the Polaroid thumbnail's proportions (or 16:9); the real ratio
+    // arrives with 'loadedmetadata' and the frame re-fits smoothly.
+    const thumbVideo = sourceFrameEl.querySelector('video');
+    activeVideoAspect = thumbVideo && thumbVideo.videoWidth && thumbVideo.videoHeight
+      ? thumbVideo.videoWidth / thumbVideo.videoHeight
+      : (item.videoSrc ? rect.width / rect.height : demoCanvas.width / demoCanvas.height);
     if (item.videoSrc) {
       realVideo.src = item.videoSrc;
       realVideo.style.display = 'block';
@@ -2030,15 +2086,15 @@
     cameraStage.classList.add('diving');
     cameraStage.style.transform = 'scale(3.6)';
 
-    // 3. Expand portal frame smoothly to fullscreen
+    // 3. Expand portal frame smoothly to the video's own size (centered)
     videoPortalFrame.style.transition = '';
     requestAnimationFrame(() => {
       videoPortal.classList.add('expanded');
-      videoPortalFrame.style.top = '0px';
-      videoPortalFrame.style.left = '0px';
-      videoPortalFrame.style.width = '100vw';
-      videoPortalFrame.style.height = '100vh';
-      videoPortalFrame.style.borderRadius = '0px';
+      // Already-cached video: metadata may be available before 'loadedmetadata' fires again
+      if (item.videoSrc && realVideo.videoWidth && realVideo.videoHeight) {
+        activeVideoAspect = realVideo.videoWidth / realVideo.videoHeight;
+      }
+      applyFittedVideoRect();
 
       if (item.videoSrc) {
         realVideo.play().catch(() => {});
