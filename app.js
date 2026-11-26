@@ -1780,7 +1780,7 @@
       tab.classList.toggle('active', Number(tab.dataset.spread) === currentSpread);
     });
 
-    // Update bottom spread status, ambient theme & chapter song
+    // Update bottom spread status & ambient theme (music playlist runs independently)
     if (currentSpread === 0) {
       spreadChapterEl.textContent = 'Portada';
       spreadPagesEl.textContent = 'Tocá el cuaderno o "Pasar hoja" para abrir';
@@ -2240,21 +2240,52 @@
   const TARGET_VOL = 0.45;
   const melody = [261.63, 329.63, 392.00, 493.88, 440.00, 392.00, 329.63, 293.66];
 
-  function getActiveTrackInfo() {
-    if (currentSpread >= 2 && currentSpread < TOTAL_SPREADS) {
-      const ch = DATA.chapters[currentSpread - 2];
+  // Playlist: songs play one after another in chapter order, no matter which page
+  // is open — general song first, then each unlocked chapter's song, then loop.
+  let playlistIndex = 0;
+
+  function getPlaylist() {
+    const list = [];
+    if (DATA.meta.musicSrc) {
+      list.push({ src: DATA.meta.musicSrc, label: '♫ Sonando' });
+    }
+    DATA.chapters.forEach((ch) => {
       if (ch && !isChapterLocked(ch) && ch.musicSrc) {
-        return {
+        list.push({
           src: ch.musicSrc,
           label: ch.musicTitle ? `♫ ${ch.musicTitle}` : `♫ ${ch.tabLabel}`
-        };
+        });
       }
-    }
-    if (DATA.meta.musicSrc) {
-      return { src: DATA.meta.musicSrc, label: '♫ Sonando' };
-    }
-    return { src: '', label: '♫ Sonando' };
+    });
+    return list;
   }
+
+  function getActiveTrackInfo() {
+    const list = getPlaylist();
+    if (!list.length) return { src: '', label: '♫ Sonando' };
+    // Keep playing the current song if the list changed (e.g. a chapter just unlocked)
+    const currentIdx = currentTrackSrc ? list.findIndex((t) => t.src === currentTrackSrc) : -1;
+    if (currentIdx >= 0) playlistIndex = currentIdx;
+    if (playlistIndex >= list.length) playlistIndex = 0;
+    return list[playlistIndex];
+  }
+
+  bgAudio.loop = false;
+  bgAudio.addEventListener('ended', () => {
+    if (!musicPlaying || pausedByVideo) return;
+    const list = getPlaylist();
+    if (!list.length) return;
+    const currentIdx = list.findIndex((t) => t.src === currentTrackSrc);
+    playlistIndex = ((currentIdx >= 0 ? currentIdx : playlistIndex) + 1) % list.length;
+    const next = list[playlistIndex];
+    if (next.src === currentTrackSrc) {
+      // Single-song playlist: just start it over
+      bgAudio.currentTime = 0;
+      bgAudio.play().catch(() => {});
+      return;
+    }
+    startTrack(next);
+  });
 
   function playSynthNote() {
     if (!audioCtx) return;
@@ -2312,6 +2343,13 @@
     // Same track already playing -> nothing to restart
     if (currentTrackSrc === track.src && !bgAudio.paused) return;
 
+    // Same track paused (music toggled off, or a video was open): resume where it left off
+    if (currentTrackSrc === track.src && bgAudio.paused && bgAudio.currentSrc) {
+      bgAudio.volume = 0;
+      bgAudio.play().then(() => fadeAudioTo(TARGET_VOL, 420)).catch(() => {});
+      return;
+    }
+
     const switchToNew = () => {
       currentTrackSrc = track.src;
       bgAudio.src = track.src;
@@ -2329,8 +2367,11 @@
     }
   }
 
+  // Turning pages no longer changes the song (the playlist runs on its own);
+  // this only makes sure music is running if it should be.
   function syncTrackForCurrentSpread() {
     if (!musicPlaying || pausedByVideo) return;
+    if (currentTrackSrc || synthTimer) return;
     startTrack(getActiveTrackInfo());
   }
 
