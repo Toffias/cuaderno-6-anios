@@ -360,9 +360,8 @@ html, body {
 .locked-chapter-box {
   margin: auto 0;
   padding: 22px 22px;
-  border-radius: 16px;
-  background: rgba(255, 253, 248, 0.78);
-  border: 1.5px dashed rgba(196, 100, 85, 0.36);
+  background: transparent;
+  border: none;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -388,18 +387,6 @@ html, body {
   filter: drop-shadow(0 16px 24px rgba(58, 38, 22, 0.22));
 }
 .hourglass-3d-host:active { cursor: grabbing; }
-.hourglass-drag-hint {
-  position: absolute;
-  bottom: -14px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.65rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  color: rgba(118, 98, 88, 0.78);
-  white-space: nowrap;
-  pointer-events: none;
-}
 .locked-date-pill {
   font-size: 0.76rem;
   font-weight: 700;
